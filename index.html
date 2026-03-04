@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rekenmeester</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700;900&display=swap');
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Nunito',sans-serif;background:#fff9f0;min-height:100vh;
+  background-image:radial-gradient(circle at 10% 20%,#ffe0e0 0%,transparent 40%),
+  radial-gradient(circle at 90% 80%,#e0f0ff 0%,transparent 40%),
+  radial-gradient(circle at 50% 50%,#e8ffe0 0%,transparent 60%);}
+
+.header{background:linear-gradient(135deg,#ff7043,#ff9800);padding:18px 16px 34px;text-align:center;position:relative;overflow:hidden;box-shadow:0 4px 20px rgba(255,112,67,.4);}
+.header::after{content:'';position:absolute;bottom:-2px;left:0;right:0;height:32px;background:#fff9f0;border-radius:50% 50% 0 0/32px 32px 0 0;}
+.header h1{font-family:'Fredoka One',cursive;font-size:clamp(2rem,8vw,3.4rem);color:white;text-shadow:3px 3px 0 rgba(0,0,0,.15);letter-spacing:2px;}
+.header .sub{color:rgba(255,255,255,.9);font-size:.95rem;font-weight:700;margin-top:4px;}
+
+.scorebar{display:flex;align-items:center;justify-content:center;gap:12px;padding:18px 14px 6px;flex-wrap:wrap;}
+.score-box{background:white;border-radius:16px;padding:9px 22px;font-family:'Fredoka One',cursive;font-size:1.35rem;color:#333;box-shadow:0 4px 14px rgba(0,0,0,.1),0 0 0 3px #ffd54f;display:flex;align-items:center;gap:7px;}
+.score-box .big{font-size:1.8rem;color:#ff7043;}
+.btn-new{background:linear-gradient(135deg,#42a5f5,#1e88e5);color:white;border:none;border-radius:13px;padding:11px 22px;font-family:'Fredoka One',cursive;font-size:1.1rem;cursor:pointer;box-shadow:0 4px 14px rgba(30,136,229,.4),0 0 0 3px #90caf9;transition:transform .15s;}
+.btn-new:hover{transform:scale(1.06);}.btn-new:active{transform:scale(.95);}
+.date-label{width:100%;text-align:center;font-size:.88rem;font-weight:700;color:#aaa;letter-spacing:.04em;}
+
+/* PUZZLE */
+.puzzle-wrap{max-width:380px;margin:4px auto 6px;padding:0 14px;}
+.puzzle-label{text-align:center;font-family:'Fredoka One',cursive;font-size:1.05rem;color:#888;margin-bottom:6px;}
+.puzzle-outer{background:white;border-radius:20px;padding:10px;box-shadow:0 6px 24px rgba(0,0,0,.12),0 0 0 3px #ffe082;position:relative;}
+#puzzleCanvas{display:block;border-radius:12px;width:100%;height:auto;}
+.puzzle-done-banner{display:none;position:absolute;inset:0;background:rgba(255,255,255,.88);border-radius:12px;align-items:center;justify-content:center;flex-direction:column;font-family:'Fredoka One',cursive;font-size:1.4rem;color:#ff7043;text-align:center;padding:14px;animation:popIn .4s ease both;}
+
+/* GRID */
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px;max-width:1100px;margin:0 auto;padding:8px 14px 60px;}
+.cat-card{background:white;border-radius:22px;overflow:hidden;box-shadow:0 6px 22px rgba(0,0,0,.1);border:3px solid transparent;animation:popIn .4s ease both;}
+@keyframes popIn{from{opacity:0;transform:scale(.88) translateY(16px);}to{opacity:1;transform:scale(1) translateY(0);}}
+.cat-card.plus{border-color:#ef5350;}.cat-card.minus{border-color:#26c6da;}.cat-card.times{border-color:#ffca28;}.cat-card.divide{border-color:#66bb6a;}
+.cat-head{padding:13px 16px 11px;display:flex;align-items:center;gap:10px;color:white;}
+.cat-card.plus .cat-head{background:linear-gradient(135deg,#ef5350,#e53935);}
+.cat-card.minus .cat-head{background:linear-gradient(135deg,#26c6da,#00acc1);}
+.cat-card.times .cat-head{background:linear-gradient(135deg,#ffca28,#ffa000);color:#5d4037;}
+.cat-card.divide .cat-head{background:linear-gradient(135deg,#66bb6a,#43a047);}
+.cat-emoji{font-size:1.8rem;}.cat-name{font-family:'Fredoka One',cursive;font-size:1.35rem;}.cat-sym{margin-left:auto;font-family:'Fredoka One',cursive;font-size:2rem;opacity:.4;}
+.prog-bar{height:7px;background:#f0f0f0;}.prog-fill{height:100%;width:0%;transition:width .5s ease;border-radius:0 4px 4px 0;}
+.cat-card.plus .prog-fill{background:#ef5350;}.cat-card.minus .prog-fill{background:#26c6da;}.cat-card.times .prog-fill{background:#ffca28;}.cat-card.divide .prog-fill{background:#66bb6a;}
+.sums-list{padding:12px 12px 14px;display:flex;flex-direction:column;gap:9px;}
+.sum-row{display:flex;align-items:center;background:#fafafa;border-radius:13px;padding:9px 12px;gap:6px;border:2px solid #efefef;transition:border-color .3s,background .3s;}
+.sum-row.correct{border-color:#66bb6a;background:#f1fff2;}.sum-row.wrong{border-color:#ef5350;background:#fff4f4;animation:wiggle .35s ease;}
+@keyframes wiggle{0%,100%{transform:translateX(0);}25%{transform:translateX(-6px);}75%{transform:translateX(6px);}}
+.sum-q{font-family:'Fredoka One',cursive;font-size:1.2rem;color:#333;white-space:nowrap;flex:1;}
+.eq{font-family:'Fredoka One',cursive;font-size:1.2rem;color:#ccc;}
+.ans-input{width:68px;border:2px solid #ddd;border-radius:10px;font-family:'Fredoka One',cursive;font-size:1.15rem;text-align:center;padding:6px 4px;color:#333;outline:none;background:white;transition:border-color .2s,box-shadow .2s;-moz-appearance:textfield;}
+.ans-input::-webkit-outer-spin-button,.ans-input::-webkit-inner-spin-button{-webkit-appearance:none;}
+.ans-input:focus{border-color:#90caf9;box-shadow:0 0 0 3px rgba(144,202,249,.3);}
+.ans-input:disabled{background:#f5f5f5;color:#999;}
+.ico{font-size:1.3rem;min-width:24px;text-align:center;}
+
+#confetti-box{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1000;}
+.cf{position:absolute;top:-16px;border-radius:3px;animation:fall linear forwards;}
+@keyframes fall{to{transform:translateY(105vh) rotate(700deg);opacity:0;}}
+</style>
+</head>
+<body>
+<div id="confetti-box"></div>
+<div class="header">
+  <h1>🧮 Rekenmeester!</h1>
+  <div class="sub">Groep 5 &amp; 6 — Dagelijkse sommen</div>
+</div>
+<div class="scorebar">
+  <div class="date-label" id="dateLabel"></div>
+  <div class="score-box">⭐ Score: <span class="big" id="scoreNum">0</span>&nbsp;/ 12</div>
+  <button class="btn-new" onclick="newSums()">🔄 Nieuwe sommen</button>
+</div>
+<div class="puzzle-wrap">
+  <div class="puzzle-label" id="puzzleLabel">Los sommen op om het fantasiedier te onthullen! 🔍</div>
+  <div class="puzzle-outer">
+    <canvas id="puzzleCanvas" width="360" height="270"></canvas>
+    <div class="puzzle-done-banner" id="puzzleDone"></div>
+  </div>
+</div>
+<div class="grid" id="grid"></div>
+
+<script>
+/* =========================================================
+   FANTASY HYBRID ANIMALS
+   Each animal is drawn with canvas 2D — a fun mix of two
+   real animals. We store the name and a draw function.
+   ========================================================= */
+var W=360, H=270;
+
+var ANIMALS = [
+
+  /* 1. FLAMINGOCORN — flamingo + unicorn */
+  { name:'Flamingocorn', mix:'Flamingo + Eenhoorn', emoji:'🦩🦄',
+    bg:['#ffe0f0','#ffd6ec'],
+    draw: function(c){
+      // sky
+      var g=c.createLinearGradient(0,0,0,H);g.addColorStop(0,'#ffe0f0');g.addColorStop(1,'#fff5fb');
+      c.fillStyle=g;c.fillRect(0,0,W,H);
+      // ground
+      c.fillStyle='#f8c8e0';c.fillRect(0,H*.72,W,H*.28);
+      // sparkles
+      sp(c,[[40,30],[320,50],[280,90],[60,110],[310,160]]);
+      // long neck
+      c.strokeStyle='#f472b6';c.lineWidth=22;c.lineCap='round';
+      c.beginPath();c.moveTo(190,220);c.bezierCurveTo(195,160,160,110,155,70);c.stroke();
+      // body (egg-shaped)
+      c.fillStyle='#f9a8d4';
+      c.beginPath();c.ellipse(200,210,55,45,-.2,0,Math.PI*2);c.fill();
+      // wing
+      c.fillStyle='#fb7eb8';
+      c.beginPath();c.ellipse(230,205,30,18,.5,0,Math.PI*2);c.fill();
+      c.fillStyle='#f472b6';
+      c.beginPath();c.ellipse(234,210,18,10,.5,0,Math.PI*2);c.fill();
+      // leg
+      c.strokeStyle='#f472b6';c.lineWidth=8;
+      c.beginPath();c.moveTo(185,245);c.lineTo(180,265);c.stroke();
+      c.beginPath();c.moveTo(215,245);c.lineTo(212,265);c.stroke();
+      // head
+      c.fillStyle='#fce7f3';
+      c.beginPath();c.ellipse(155,58,22,19,-.1,0,Math.PI*2);c.fill();
+      // horn (unicorn!)
+      c.fillStyle='#c084fc';
+      c.beginPath();c.moveTo(148,42);c.lineTo(138,8);c.lineTo(162,38);c.closePath();c.fill();
+      // horn stripe
+      c.strokeStyle='#a855f7';c.lineWidth=2;
+      c.beginPath();c.moveTo(150,38);c.lineTo(142,16);c.stroke();
+      // eye
+      c.fillStyle='#1e1b4b';c.beginPath();c.arc(161,55,4,0,Math.PI*2);c.fill();
+      c.fillStyle='white';c.beginPath();c.arc(163,53,1.5,0,Math.PI*2);c.fill();
+      // beak
+      c.fillStyle='#fbbf24';
+      c.beginPath();c.moveTo(172,62);c.lineTo(186,58);c.lineTo(186,66);c.lineTo(172,68);c.closePath();c.fill();
+      // mane
+      ['#c084fc','#f472b6','#a78bfa','#fb7185'].forEach(function(col,i){
+        c.fillStyle=col;c.beginPath();c.ellipse(149+i*4,48+i*6,5,9,.3+i*.2,0,Math.PI*2);c.fill();
+      });
+      // label
+      label(c,'Flamingocorn','Flamingo + Eenhoorn');
+    }
+  },
+
+  /* 2. GIRAFowl — giraffe + owl */
+  { name:'Girafuil', mix:'Giraf + Uil', emoji:'🦒🦉',
+    bg:['#fef9c3','#fef3c7'],
+    draw: function(c){
+      var g=c.createLinearGradient(0,0,0,H);g.addColorStop(0,'#fef9c3');g.addColorStop(1,'#fff');
+      c.fillStyle=g;c.fillRect(0,0,W,H);
+      c.fillStyle='#86efac';c.fillRect(0,H*.75,W,H*.25);
+      sp(c,[[50,40],[300,30],[310,120]]);
+      // long giraffe neck
+      c.fillStyle='#fcd34d';
+      c.beginPath();c.moveTo(165,230);c.lineTo(175,230);c.lineTo(185,80);c.lineTo(160,80);c.closePath();c.fill();
+      // spots on neck
+      c.fillStyle='#d97706';
+      [[168,200,8,5],[162,160,7,6],[170,130,9,5],[164,100,6,7]].forEach(function(s){
+        c.beginPath();c.ellipse(s[0],s[1],s[2],s[3],.3,0,Math.PI*2);c.fill();
+      });
+      // body (owl round)
+      c.fillStyle='#fde68a';
+      c.beginPath();c.ellipse(195,230,60,48,0,0,Math.PI*2);c.fill();
+      c.fillStyle='#fef3c7';
+      c.beginPath();c.ellipse(195,238,38,30,0,0,Math.PI*2);c.fill();
+      // owl wings
+      c.fillStyle='#d97706';
+      c.beginPath();c.ellipse(140,230,28,38,-.4,0,Math.PI*2);c.fill();
+      c.beginPath();c.ellipse(250,230,28,38,.4,0,Math.PI*2);c.fill();
+      // feather tips
+      c.fillStyle='#92400e';
+      [130,138,148].forEach(function(x){c.beginPath();c.ellipse(x,255,5,9,-.1,0,Math.PI*2);c.fill();});
+      [242,252,262].forEach(function(x){c.beginPath();c.ellipse(x,255,5,9,.1,0,Math.PI*2);c.fill();});
+      // owl head
+      c.fillStyle='#fcd34d';
+      c.beginPath();c.ellipse(170,68,34,32,0,0,Math.PI*2);c.fill();
+      // ear tufts
+      c.fillStyle='#d97706';
+      c.beginPath();c.moveTo(148,48);c.lineTo(142,25);c.lineTo(158,44);c.closePath();c.fill();
+      c.beginPath();c.moveTo(192,48);c.lineTo(198,25);c.lineTo(182,44);c.closePath();c.fill();
+      // big owl eyes
+      c.fillStyle='white';c.beginPath();c.arc(158,68,12,0,Math.PI*2);c.fill();
+      c.beginPath();c.arc(182,68,12,0,Math.PI*2);c.fill();
+      c.fillStyle='#1c1917';c.beginPath();c.arc(159,68,7,0,Math.PI*2);c.fill();
+      c.beginPath();c.arc(183,68,7,0,Math.PI*2);c.fill();
+      c.fillStyle='#fbbf24';c.beginPath();c.arc(161,66,2.5,0,Math.PI*2);c.fill();
+      c.beginPath();c.arc(185,66,2.5,0,Math.PI*2);c.fill();
+      // beak
+      c.fillStyle='#f59e0b';
+      c.beginPath();c.moveTo(165,76);c.lineTo(170,86);c.lineTo(175,76);c.closePath();c.fill();
+      // ossicones (giraffe horns)
+      c.strokeStyle='#d97706';c.lineWidth=6;c.lineCap='round';
+      c.beginPath();c.moveTo(155,38);c.lineTo(152,18);c.stroke();
+      c.beginPath();c.moveTo(185,38);c.lineTo(188,18);c.stroke();
+      c.fillStyle='#92400e';c.beginPath();c.arc(152,16,5,0,Math.PI*2);c.fill();
+      c.beginPath();c.arc(188,16,5,0,Math.PI*2);c.fill();
+      label(c,'Girafuil','Giraf + Uil');
+    }
+  },
+
+  /* 3. PENGUshark — penguin + shark */
+  { name:'Pinguaai', mix:'Pinguïn + Haai', emoji:'🐧🦈',
+    bg:['#e0f2fe','#bae6fd'],
+    draw: function(c){
+      var g=c.createLinearGradient(0,0,0,H);g.addColorStop(0,'#e0f2fe');g.addColorStop(1,'#bae6fd');
+      c.fillStyle=g;c.fillRect(0,0,W,H);
+      // ocean
+      c.fillStyle='#0ea5e9';c.fillRect(0,H*.6,W,H*.4);
+      // waves
+      c.strokeStyle='rgba(255,255,255,.5)';c.lineWidth=3;
+      [0,30,60].forEach(function(off){
+        c.beginPath();c.moveTo(0,H*.6+off);
+        for(var x=0;x<W;x+=20)c.quadraticCurveTo(x+10,H*.6+off-8,x+20,H*.6+off);c.stroke();
+      });
+      // body — penguin shape with shark grey
+      c.fillStyle='#334155';
+      c.beginPath();c.ellipse(180,190,52,72,0,0,Math.PI*2);c.fill();
+      // white belly
+      c.fillStyle='#f0f9ff';
+      c.beginPath();c.ellipse(180,200,30,50,0,0,Math.PI*2);c.fill();
+      // shark dorsal fin on top of body
+      c.fillStyle='#475569';
+      c.beginPath();c.moveTo(190,120);c.lineTo(210,70);c.lineTo(230,125);c.closePath();c.fill();
+      // flippers
+      c.fillStyle='#1e293b';
+      c.beginPath();c.ellipse(130,195,22,42,-.5,0,Math.PI*2);c.fill();
+      c.beginPath();c.ellipse(230,195,22,42,.5,0,Math.PI*2);c.fill();
+      // shark tail instead of feet
+      c.fillStyle='#334155';
+      c.beginPath();c.moveTo(180,255);c.lineTo(148,275);c.lineTo(180,265);c.lineTo(212,275);c.closePath();c.fill();
+      // head
+      c.fillStyle='#1e293b';
+      c.beginPath();c.ellipse(180,122,38,36,0,0,Math.PI*2);c.fill();
+      // white face
+      c.fillStyle='#f0f9ff';
+      c.beginPath();c.ellipse(180,128,24,22,0,0,Math.PI*2);c.fill();
+      // eyes
+      c.fillStyle='#0f172a';c.beginPath();c.arc(170,116,6,0,Math.PI*2);c.fill();
+      c.beginPath();c.arc(190,116,6,0,Math.PI*2);c.fill();
+      c.fillStyle='white';c.beginPath();c.arc(172,114,2,0,Math.PI*2);c.fill();
+      c.beginPath();c.arc(192,114,2,0,Math.PI*2);c.fill();
+      // shark mouth with teeth
+      c.fillStyle='#f87171';
+      c.beginPath();c.arc(180,135,18,0.1,Math.PI-.1);c.fill();
+      c.fillStyle='white';
+      [-12,-5,2,10].forEach(function(dx){
+        c.beginPath();c.moveTo(180+dx,136);c.lineTo(180+dx+4,148);c.lineTo(180+dx+8,136);c.closePath();c.fill();
+      });
+      // orange beak on top of shark mouth
+      c.fillStyle='#fb923c';
+      c.beginPath();c.moveTo(172,133);c.lineTo(180,120);c.lineTo(188,133);c.closePath();c.fill();
+      label(c,'Pinguaai','Pinguïn + Haai');
+    }
+  },
+
+  /* 4. ELEPHbutterfly — elephant + butterfly */
+  { name:'Olifvlinder', mix:'Olifant + Vlinder', emoji:'🐘🦋',
+    bg:['#f3e8ff','#e9d5ff'],
+    draw: function(c){
+      var g=c.createLinearGradient(0,0,0,H);g.addColorStop(0,'#f3e8ff');g.addColorStop(1,'#fff');
+      c.fillStyle=g;c.fillRect(0,0,W,H);
+      c.fillStyle='#bbf7d0';c.fillRect(0,H*.78,W,H*.22);
+      sp(c,[[30,30],[320,40],[290,160],[50,180]]);
+      // butterfly wings (big & colorful) — behind body
+      // upper wings
+      c.fillStyle='#c084fc';
+      c.beginPath();c.ellipse(120,140,70,80,.6,0,Math.PI*2);c.fill();
+      c.beginPath();c.ellipse(240,140,70,80,-.6,0,Math.PI*2);c.fill();
+      // lower wings
+      c.fillStyle='#a855f7';
+      c.beginPath();c.ellipse(125,215,50,45,.8,0,Math.PI*2);c.fill();
+      c.beginPath();c.ellipse(235,215,50,45,-.8,0,Math.PI*2);c.fill();
+      // wing details
+      c.strokeStyle='rgba(255,255,255,.5)';c.lineWidth=2;
+      c.beginPath();c.ellipse(112,135,35,45,.6,0,Math.PI*2);c.stroke();
+      c.beginPath();c.ellipse(248,135,35,45,-.6,0,Math.PI*2);c.stroke();
+      // wing spots
+      [[105,125,10],[252,128,10],[118,205,8],[242,208,8]].forEach(function(s){
+        c.fillStyle='rgba(255,255,255,.55)';c.beginPath();c.arc(s[0],s[1],s[2],0,Math.PI*2);c.fill();
+      });
+      // elephant body
+      c.fillStyle='#94a3b8';
+      c.beginPath();c.ellipse(180,215,55,48,0,0,Math.PI*2);c.fill();
+      // head
+      c.fillStyle='#94a3b8';
+      c.beginPath();c.ellipse(180,155,44,40,0,0,Math.PI*2);c.fill();
+      // elephant ears (small, wings take over)
+      c.fillStyle='#7dd3fc';
+      c.beginPath();c.ellipse(145,158,22,28,-.3,0,Math.PI*2);c.fill();
+      c.beginPath();c.ellipse(215,158,22,28,.3,0,Math.PI*2);c.fill();
+      // trunk
+      c.strokeStyle='#94a3b8';c.lineWidth=18;c.lineCap='round';
+      c.beginPath();c.moveTo(180,175);c.bezierCurveTo(185,195,200,210,195,230);c.stroke();
+      // trunk tip
+      c.strokeStyle='#cbd5e1';c.lineWidth=12;
+      c.beginPath();c.moveTo(195,225);c.lineTo(200,240);c.stroke();
+      // tusks
+      c.strokeStyle='#fef9c3';c.lineWidth=5;
+      c.beginPath();c.moveTo(162,178);c.quadraticCurveTo(148,195,152,210);c.stroke();
+      // eyes
+      c.fillStyle='#1e293b';c.beginPath();c.arc(167,148,5,0,Math.PI*2);c.fill();
+      c.beginPath();c.arc(193,148,5,0,Math.PI*2);c.fill();
+      c.fillStyle='white';c.beginPath();c.arc(169,146,2,0,Math.PI*2);c.fill();
+      c.beginPath();c.arc(195,146,2,0,Math.PI*2);c.fill();
+      // antennae
+      c.strokeStyle='#7c3aed';c.lineWidth=3;
+      c.beginPath();c.moveTo(170,118);c.quadraticCurveTo(155,95,148,78);c.stroke();
+      c.beginPath();c.moveTo(190,118);c.quadraticCurveTo(205,95,212,78);c.stroke();
+      c.fillStyle='#7c3aed';c.beginPath();c.arc(148,77,6,0,Math.PI*2);c.fill();
+      c.beginPath();c.arc(212,77,6,0,Math.PI*2);c.fill();
+      // legs
+      c.fillStyle='#94a3b8';
+      [[152,250],[172,255],[188,255],[208,250]].forEach(function(l){
+        c.beginPath();c.ellipse(l[0],l[1],10,16,0,0,Math.PI*2);c.fill();
+      });
+      label(c,'Olifvlinder','Olifant + Vlinder');
+    }
+  },
+
+  /* 5. CROCOLION — crocodile + lion */
+  { name:'Krokodijl', mix:'Krokodil + Leeuw', emoji:'🐊🦁',
+    bg:['#fef9c3','#d1fae5'],
+    draw: function(c){
+      var g=c.createLinearGradient(0,0,0,H);g.addColorStop(0,'#ecfdf5');g.addColorStop(1,'#fef9c3');
+      c.fillStyle=g;c.fillRect(0,0,W,H);
+      c.fillStyle='#86efac';c.fillRect(0,H*.78,W,H*.22);
+      sp(c,[[40,40],[300,30]]);
+      // long croc body
+      c.fillStyle='#4ade80';
+      c.beginPath();c.ellipse(195,220,95,38,0,0,Math.PI*2);c.fill();
+      // underbelly
+      c.fillStyle='#fef9c3';
+      c.beginPath();c.ellipse(195,228,78,22,0,0,Math.PI*2);c.fill();
+      // scales on back
+      c.fillStyle='#16a34a';
+      [100,125,150,175,200,225,260,290].forEach(function(x,i){
+        c.beginPath();c.ellipse(x,196+i%2*4,9,7,0,0,Math.PI*2);c.fill();
+      });
+      // tail
+      c.fillStyle='#4ade80';
+      c.beginPath();c.moveTo(280,215);c.quadraticCurveTo(330,200,350,215);c.quadraticCurveTo(340,228,280,228);c.closePath();c.fill();
+      // legs
+      c.fillStyle='#4ade80';
+      [[110,240],[145,248],[240,248],[275,240]].forEach(function(l){
+        c.beginPath();c.ellipse(l[0],l[1],14,10,.2,0,Math.PI*2);c.fill();
+      });
+      // LION HEAD with mane
+      var mx=120,my=160;
+      // mane
+      ['#d97706','#b45309','#f59e0b','#92400e','#fbbf24','#d97706','#b45309','#f59e0b'].forEach(function(col,i){
+        var a=i*Math.PI/4;
+        c.fillStyle=col;c.beginPath();c.ellipse(mx+Math.cos(a)*36,my+Math.sin(a)*36,14,18,a,0,Math.PI*2);c.fill();
+      });
+      // head
+      c.fillStyle='#fcd34d';c.beginPath();c.arc(mx,my,38,0,Math.PI*2);c.fill();
+      // croc snout (long)
+      c.fillStyle='#4ade80';
+      c.beginPath();c.ellipse(mx+20,my+14,38,16,-.1,0,Math.PI*2);c.fill();
+      // teeth
+      c.fillStyle='white';
+      [mx+2,mx+12,mx+22,mx+32,mx+42].forEach(function(x){
+        c.beginPath();c.moveTo(x,my+6);c.lineTo(x+4,my+18);c.lineTo(x+8,my+6);c.closePath();c.fill();
+      });
+      c.strokeStyle='#15803d';c.lineWidth=2;
+      c.beginPath();c.moveTo(mx-15,my+14);c.lineTo(mx+56,my+14);c.stroke();
+      // eyes
+      c.fillStyle='#fef9c3';c.beginPath();c.arc(mx-10,my-8,9,0,Math.PI*2);c.fill();
+      c.beginPath();c.arc(mx+10,my-8,9,0,Math.PI*2);c.fill();
+      c.fillStyle='#15803d';c.beginPath();c.arc(mx-10,my-8,5,0,Math.PI*2);c.fill();
+      c.beginPath();c.arc(mx+10,my-8,5,0,Math.PI*2);c.fill();
+      c.fillStyle='#111';c.beginPath();c.arc(mx-10,my-8,3,0,Math.PI*2);c.fill();
+      c.beginPath();c.arc(mx+10,my-8,3,0,Math.PI*2);c.fill();
+      c.fillStyle='white';c.beginPath();c.arc(mx-8,my-10,1.5,0,Math.PI*2);c.fill();
+      c.beginPath();c.arc(mx+12,my-10,1.5,0,Math.PI*2);c.fill();
+      // lion nose
+      c.fillStyle='#92400e';c.beginPath();c.arc(mx-2,my+4,5,0,Math.PI*2);c.fill();
+      // whiskers
+      c.strokeStyle='#fef9c3';c.lineWidth=1.5;
+      [[-30,-1],[-42,4],[-30,9]].forEach(function(w){c.beginPath();c.moveTo(mx+w[0],my+w[1]);c.lineTo(mx-10,my+4);c.stroke();});
+      [[36,-1],[48,4],[36,9]].forEach(function(w){c.beginPath();c.moveTo(mx+w[0]-22,my+w[1]);c.lineTo(mx+10,my+4);c.stroke();});
+      // lion ears
+      c.fillStyle='#fcd34d';
+      c.beginPath();c.moveTo(mx-26,my-28);c.lineTo(mx-38,my-52);c.lineTo(mx-12,my-32);c.closePath();c.fill();
+      c.beginPath();c.moveTo(mx+26,my-28);c.lineTo(mx+38,my-52);c.lineTo(mx+12,my-32);c.closePath();c.fill();
+      c.fillStyle='#fda4af';c.beginPath();c.moveTo(mx-24,my-30);c.lineTo(mx-34,my-48);c.lineTo(mx-14,my-32);c.closePath();c.fill();
+      c.beginPath();c.moveTo(mx+24,my-30);c.lineTo(mx+34,my-48);c.lineTo(mx+14,my-32);c.closePath();c.fill();
+      label(c,'Krokodijl','Krokodil + Leeuw');
+    }
+  },
+
+  /* 6. POLARBEE — polar bear + bee */
+  { name:'IJsbeer-Bij', mix:'IJsbeer + Bij', emoji:'🐻‍❄️🐝',
+    bg:['#e0f2fe','#fef9c3'],
+    draw: function(c){
+      var g=c.createLinearGradient(0,0,0,H);g.addColorStop(0,'#e0f2fe');g.addColorStop(1,'#fef9c3');
+      c.fillStyle=g;c.fillRect(0,0,W,H);
+      // snow ground
+      c.fillStyle='#e0f2fe';c.fillRect(0,H*.8,W,H*.2);
+      c.fillStyle='white';c.beginPath();c.ellipse(W/2,H*.8,W*.7,20,0,0,Math.PI*2);c.fill();
+      sp(c,[[30,30],[300,25],[310,140],[50,160]]);
+      // bee wings — transparent, behind body
+      c.fillStyle='rgba(186,230,253,.7)';
+      c.beginPath();c.ellipse(140,150,50,30,-.5,0,Math.PI*2);c.fill();
+      c.beginPath();c.ellipse(220,150,50,30,.5,0,Math.PI*2);c.fill();
+      c.beginPath();c.ellipse(148,180,35,20,-.6,0,Math.PI*2);c.fill();
+      c.beginPath();c.ellipse(212,180,35,20,.6,0,Math.PI*2);c.fill();
+      c.strokeStyle='rgba(147,197,253,.8)';c.lineWidth=1.5;
+      c.beginPath();c.ellipse(140,150,50,30,-.5,0,Math.PI*2);c.stroke();
+      c.beginPath();c.ellipse(220,150,50,30,.5,0,Math.PI*2);c.stroke();
+      // polar bear body with bee stripes
+      c.fillStyle='#f8fafc';
+      c.beginPath();c.ellipse(180,225,65,55,0,0,Math.PI*2);c.fill();
+      // yellow and black stripes on belly
+      c.save();c.beginPath();c.ellipse(180,225,65,55,0,0,Math.PI*2);c.clip();
+      ['#fbbf24','#1c1917','#fbbf24','#1c1917','#fbbf24'].forEach(function(col,i){
+        c.fillStyle=col;c.fillRect(115,183+i*20,130,20);
+      });
+      c.restore();
+      // white fur overlay on sides
+      c.fillStyle='rgba(248,250,252,.6)';
+      c.beginPath();c.ellipse(148,220,20,50,-.2,0,Math.PI*2);c.fill();
+      c.beginPath();c.ellipse(212,220,20,50,.2,0,Math.PI*2);c.fill();
+      // bear arms
+      c.fillStyle='#f1f5f9';
+      c.beginPath();c.ellipse(120,215,18,36,-.4,0,Math.PI*2);c.fill();
+      c.beginPath();c.ellipse(240,215,18,36,.4,0,Math.PI*2);c.fill();
+      // legs
+      c.fillStyle='#f1f5f9';
+      c.beginPath();c.ellipse(155,264,18,16,0,0,Math.PI*2);c.fill();
+      c.beginPath();c.ellipse(205,264,18,16,0,0,Math.PI*2);c.fill();
+      // head
+      c.fillStyle='#f8fafc';c.beginPath();c.arc(180,155,46,0,Math.PI*2);c.fill();
+      // bee antennae
+      c.strokeStyle='#1c1917';c.lineWidth=3;
+      c.beginPath();c.moveTo(162,113);c.quadraticCurveTo(148,90,140,76);c.stroke();
+      c.beginPath();c.moveTo(198,113);c.quadraticCurveTo(212,90,220,76);c.stroke();
+      c.fillStyle='#fbbf24';c.beginPath();c.arc(140,75,7,0,Math.PI*2);c.fill();
+      c.beginPath();c.arc(220,75,7,0,Math.PI*2);c.fill();
+      // ears
+      c.fillStyle='#f1f5f9';c.beginPath();c.arc(143,122,16,0,Math.PI*2);c.fill();
+      c.beginPath();c.arc(217,122,16,0,Math.PI*2);c.fill();
+      c.fillStyle='#fda4af';c.beginPath();c.arc(143,122,9,0,Math.PI*2);c.fill();
+      c.beginPath();c.arc(217,122,9,0,Math.PI*2);c.fill();
+      // eyes
+      c.fillStyle='#1c1917';c.beginPath();c.arc(167,150,6,0,Math.PI*2);c.fill();
+      c.beginPath();c.arc(193,150,6,0,Math.PI*2);c.fill();
+      c.fillStyle='white';c.beginPath();c.arc(169,148,2.5,0,Math.PI*2);c.fill();
+      c.beginPath();c.arc(195,148,2.5,0,Math.PI*2);c.fill();
+      // snout
+      c.fillStyle='#e2e8f0';c.beginPath();c.ellipse(180,168,20,14,0,0,Math.PI*2);c.fill();
+      c.fillStyle='#1c1917';c.beginPath();c.arc(180,164,5,0,Math.PI*2);c.fill();
+      // bee stinger tail
+      c.fillStyle='#fbbf24';
+      c.beginPath();c.moveTo(180,276);c.lineTo(172,268);c.lineTo(188,268);c.closePath();c.fill();
+      label(c,'IJsbeer-Bij','IJsbeer + Bij');
+    }
+  },
+
+];
+
+/* ---- helpers ---- */
+function sp(c, pts){
+  pts.forEach(function(p){
+    var r=4+Math.random()*4;
+    c.fillStyle='rgba(255,220,50,.6)';
+    c.beginPath();
+    for(var k=0;k<5;k++){
+      var a=k*4*Math.PI/5-Math.PI/2;
+      var a2=k*4*Math.PI/5+2*Math.PI/5-Math.PI/2;
+      if(k===0)c.moveTo(p[0]+r*Math.cos(a),p[1]+r*Math.sin(a));
+      else c.lineTo(p[0]+r*Math.cos(a),p[1]+r*Math.sin(a));
+      c.lineTo(p[0]+r*.4*Math.cos(a2),p[1]+r*.4*Math.sin(a2));
+    }
+    c.closePath();c.fill();
+  });
+}
+function label(c,name,mix){
+  c.fillStyle='rgba(0,0,0,.18)';
+  c.fillRect(0,H-34,W,34);
+  c.font='bold 15px Fredoka One,cursive';
+  c.fillStyle='white';c.textAlign='center';c.textBaseline='middle';
+  c.fillText(name+' ('+mix+')',W/2,H-17);
+}
+
+/* =========================================================
+   PUZZLE ENGINE
+   ========================================================= */
+var COLS=4,ROWS=3,pW=W/COLS,pH=H/ROWS;
+var pCanvas=document.getElementById('puzzleCanvas');
+var pCtx=pCanvas.getContext('2d');
+var sceneData=null, tileOrder=[], revealed=[], correctCount=0;
+var currentAnimal=-1;
+
+function pickAnimal(){
+  var next;
+  do{ next=Math.floor(Math.random()*ANIMALS.length); }while(next===currentAnimal && ANIMALS.length>1);
+  currentAnimal=next;
+}
+
+function initPuzzle(){
+  pickAnimal();
+  ANIMALS[currentAnimal].draw(pCtx);
+  sceneData=pCtx.getImageData(0,0,W,H);
+  shuffleTiles();
+  revealed=[];correctCount=0;
+  coverAll();
+  document.getElementById('puzzleDone').style.display='none';
+  updatePuzzleLabel();
+}
+
+function shuffleTiles(){
+  tileOrder=[];for(var i=0;i<12;i++)tileOrder.push(i);
+  for(var j=tileOrder.length-1;j>0;j--){
+    var k=Math.floor(Math.random()*(j+1));var t=tileOrder[j];tileOrder[j]=tileOrder[k];tileOrder[k]=t;
+  }
+}
+
+function coverAll(){
+  for(var i=0;i<12;i++){drawCover(tileOrder[i],i);}
+}
+
+function drawCover(idx,num){
+  var col=idx%COLS,row=Math.floor(idx/COLS);
+  var x=col*pW,y=row*pH;
+  pCtx.fillStyle='#c8d6e5';pCtx.fillRect(x,y,pW,pH);
+  pCtx.strokeStyle='white';pCtx.lineWidth=2;pCtx.strokeRect(x+1,y+1,pW-2,pH-2);
+  pCtx.fillStyle='#8fa8c0';
+  pCtx.font='bold 20px Nunito,sans-serif';
+  pCtx.textAlign='center';pCtx.textBaseline='middle';
+  pCtx.fillText('?',x+pW/2,y+pH/2);
+}
+
+function revealTile(n){
+  var idx=tileOrder[n];
+  var col=idx%COLS,row=Math.floor(idx/COLS);
+  var x=col*pW,y=row*pH;
+  if(sceneData)pCtx.putImageData(sceneData,0,0,x,y,pW,pH);
+  // sparkle burst
+  for(var s=0;s<5;s++){
+    var sx=x+Math.random()*pW,sy=y+Math.random()*pH;
+    pCtx.fillStyle='rgba(255,220,50,.85)';
+    pCtx.beginPath();pCtx.arc(sx,sy,3+Math.random()*3,0,Math.PI*2);pCtx.fill();
+  }
+  setTimeout(function(){if(sceneData)pCtx.putImageData(sceneData,0,0,x,y,pW,pH);},450);
+  revealed.push(idx);
+  updatePuzzleLabel();
+  if(revealed.length===12){
+    setTimeout(function(){
+      var a=ANIMALS[currentAnimal];
+      var el=document.getElementById('puzzleDone');
+      el.innerHTML='🎉 '+a.name+'!<br><span style="font-size:.85rem">'+a.mix+'</span><br>'+a.emoji;
+      el.style.display='flex';
+    },600);
+  }
+}
+
+function updatePuzzleLabel(){
+  var a=ANIMALS[currentAnimal];
+  var left=12-revealed.length;
+  if(left===0)document.getElementById('puzzleLabel').textContent='🎉 Je hebt de '+a.name+' onthuld!';
+  else document.getElementById('puzzleLabel').textContent='Nog '+left+' som'+(left===1?'':'men')+' — welk fantasiedier schuilt hierachter? 🔍';
+}
+
+/* =========================================================
+   SUMS
+   ========================================================= */
+var CATS=[
+  {id:'plus',  name:'Optellen',         emoji:'🟥',sym:'+',  cls:'plus'  },
+  {id:'minus', name:'Aftrekken',        emoji:'🟦',sym:'\u2212',cls:'minus' },
+  {id:'times', name:'Vermenigvuldigen', emoji:'🟨',sym:'\u00d7',cls:'times' },
+  {id:'divide',name:'Delen',            emoji:'🟩',sym:'\u00f7',cls:'divide'}
+];
+var state={},score=0;
+
+function rnd(a,b){return Math.floor(Math.random()*(b-a+1))+a;}
+function makeSum(t){
+  var a,b,ans,q;
+  if(t==='plus')  {a=rnd(10,99);b=rnd(10,99);ans=a+b;q=a+' + '+b;}
+  else if(t==='minus'){b=rnd(10,49);a=rnd(b+1,99);ans=a-b;q=a+' \u2212 '+b;}
+  else if(t==='times'){a=rnd(1,12);b=rnd(1,12);ans=a*b;q=a+' \u00d7 '+b;}
+  else            {b=rnd(2,12);ans=rnd(1,12);a=b*ans;q=a+' \u00f7 '+b;}
+  return{q:q,ans:ans};
+}
+
+function buildUI(sums){
+  state={};score=0;updateScore();
+  var grid=document.getElementById('grid');grid.innerHTML='';
+  CATS.forEach(function(cat,ci){
+    var card=document.createElement('div');
+    card.className='cat-card '+cat.cls;card.style.animationDelay=(ci*.09)+'s';
+    card.innerHTML='<div class="cat-head"><span class="cat-emoji">'+cat.emoji+'</span><span class="cat-name">'+cat.name+'</span><span class="cat-sym">'+cat.sym+'</span></div>'
+      +'<div class="prog-bar"><div class="prog-fill" id="prog-'+cat.id+'"></div></div>'
+      +'<div class="sums-list" id="list-'+cat.id+'"></div>';
+    grid.appendChild(card);
+    var list=document.getElementById('list-'+cat.id);
+    sums[cat.id].forEach(function(s,i){
+      var key=cat.id+'-'+i;
+      state[key]={ans:s.ans,status:'open'};
+      var row=document.createElement('div');
+      row.className='sum-row';row.id='row-'+key;
+      row.innerHTML='<span class="sum-q">'+s.q+'</span><span class="eq">=</span>'
+        +'<input class="ans-input" id="inp-'+key+'" type="number" placeholder="?">'
+        +'<span class="ico" id="ico-'+key+'"></span>';
+      list.appendChild(row);
+      var inp=document.getElementById('inp-'+key);
+      inp.addEventListener('input',function(){check(key,cat.id);});
+      inp.addEventListener('keydown',function(e){if(e.key==='Enter')nextInp(key);});
+    });
+  });
+}
+
+function check(key,catId){
+  var inp=document.getElementById('inp-'+key);
+  var val=parseInt(inp.value,10);
+  var info=state[key];
+  if(inp.value===''||isNaN(val))return;
+  var row=document.getElementById('row-'+key);
+  var ico=document.getElementById('ico-'+key);
+  if(val===info.ans){
+    if(info.status!=='correct'){
+      score++;info.status='correct';
+      row.className='sum-row correct';ico.textContent='✅';inp.disabled=true;
+      updateScore();updateProg(catId);
+      revealTile(correctCount);correctCount++;
+      if(score===12)celebrate();
+    }
+  } else {
+    if(info.status==='correct'){score--;updateScore();}
+    info.status='wrong';
+    row.className='sum-row';void row.offsetWidth;row.className='sum-row wrong';
+    ico.textContent='❌';
+  }
+}
+
+function nextInp(key){
+  var all=Array.from(document.querySelectorAll('.ans-input:not([disabled])'));
+  var cur=document.getElementById('inp-'+key);
+  var i=all.indexOf(cur);if(i>=0&&i<all.length-1)all[i+1].focus();
+}
+function updateScore(){document.getElementById('scoreNum').textContent=score;}
+function updateProg(catId){
+  var keys=Object.keys(state).filter(function(k){return k.startsWith(catId);});
+  var done=keys.filter(function(k){return state[k].status==='correct';}).length;
+  document.getElementById('prog-'+catId).style.width=Math.round((done/3)*100)+'%';
+}
+
+function celebrate(){
+  var cols=['#ff7043','#ffca28','#26c6da','#66bb6a','#ef5350','#ab47bc','#ff80ab','#80d8ff'];
+  var box=document.getElementById('confetti-box');box.innerHTML='';
+  for(var i=0;i<90;i++){(function(){
+    var p=document.createElement('div');p.className='cf';
+    var sz=8+Math.random()*10;p.style.width=sz+'px';p.style.height=(sz*1.3)+'px';
+    p.style.left=(Math.random()*100)+'vw';p.style.background=cols[Math.floor(Math.random()*cols.length)];
+    p.style.animationDuration=(2.2+Math.random()*2.4)+'s';p.style.animationDelay=(Math.random()*1.2)+'s';
+    box.appendChild(p);setTimeout(function(){if(p.parentNode)p.parentNode.removeChild(p);},5500);
+  })();}
+}
+
+function newSums(){
+  document.getElementById('confetti-box').innerHTML='';
+  initPuzzle();
+  var sums={};
+  CATS.forEach(function(cat){sums[cat.id]=[makeSum(cat.id),makeSum(cat.id),makeSum(cat.id)];});
+  buildUI(sums);
+}
+
+function setDate(){
+  var d=new Date();
+  var days=['zondag','maandag','dinsdag','woensdag','donderdag','vrijdag','zaterdag'];
+  var mo=['januari','februari','maart','april','mei','juni','juli','augustus','september','oktober','november','december'];
+  document.getElementById('dateLabel').textContent=days[d.getDay()]+' '+d.getDate()+' '+mo[d.getMonth()]+' '+d.getFullYear();
+}
+setDate();newSums();
+</script>
+</body>
+</html>
