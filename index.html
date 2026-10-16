@@ -7,54 +7,171 @@
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700;900&display=swap');
 *{margin:0;padding:0;box-sizing:border-box;}
-body{font-family:'Nunito',sans-serif;background:#fff9f0;min-height:100vh;
+body{font-family:'Nunito',sans-serif;background:#fff9f0;min-height:100vh;color:#333;
   background-image:radial-gradient(circle at 10% 20%,#ffe0e0 0%,transparent 40%),
   radial-gradient(circle at 90% 80%,#e0f0ff 0%,transparent 40%),
   radial-gradient(circle at 50% 50%,#e8ffe0 0%,transparent 60%);}
 
-.header{background:linear-gradient(135deg,#ff7043,#ff9800);padding:18px 16px 34px;text-align:center;position:relative;overflow:hidden;box-shadow:0 4px 20px rgba(255,112,67,.4);}
+.header{background:linear-gradient(135deg,#7e57c2,#5c6bc0);padding:18px 16px 34px;text-align:center;position:relative;overflow:hidden;box-shadow:0 4px 20px rgba(94,53,177,.35);}
 .header::after{content:'';position:absolute;bottom:-2px;left:0;right:0;height:32px;background:#fff9f0;border-radius:50% 50% 0 0/32px 32px 0 0;}
 .header h1{font-family:'Fredoka One',cursive;font-size:clamp(2rem,8vw,3.4rem);color:white;text-shadow:3px 3px 0 rgba(0,0,0,.15);letter-spacing:2px;}
-.header .sub{color:rgba(255,255,255,.9);font-size:.95rem;font-weight:700;margin-top:4px;}
+.header .sub{color:rgba(255,255,255,.92);font-size:.95rem;font-weight:700;margin-top:4px;}
 
-.scorebar{display:flex;align-items:center;justify-content:center;gap:12px;padding:18px 14px 6px;flex-wrap:wrap;}
-.score-box{background:white;border-radius:16px;padding:9px 22px;font-family:'Fredoka One',cursive;font-size:1.35rem;color:#333;box-shadow:0 4px 14px rgba(0,0,0,.1),0 0 0 3px #ffd54f;display:flex;align-items:center;gap:7px;}
-.score-box .big{font-size:1.8rem;color:#ff7043;}
-.btn-new{background:linear-gradient(135deg,#42a5f5,#1e88e5);color:white;border:none;border-radius:13px;padding:11px 22px;font-family:'Fredoka One',cursive;font-size:1.1rem;cursor:pointer;box-shadow:0 4px 14px rgba(30,136,229,.4),0 0 0 3px #90caf9;transition:transform .15s;}
-.btn-new:hover{transform:scale(1.06);}.btn-new:active{transform:scale(.95);}
-.date-label{width:100%;text-align:center;font-size:.88rem;font-weight:700;color:#aaa;letter-spacing:.04em;}
+/* TABS */
+.tabs{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;padding:14px 14px 8px;}
+.tab{border:none;cursor:pointer;font-family:'Fredoka One',cursive;font-size:1.08rem;padding:10px 18px;border-radius:16px;background:white;color:#555;box-shadow:0 4px 14px rgba(0,0,0,.08);display:flex;align-items:center;gap:8px;transition:transform .15s;border:3px solid transparent;}
+.tab span{font-size:1.3rem;}
+.tab:hover{transform:translateY(-2px);}
+.tab.nullen.on{background:linear-gradient(135deg,#ffca28,#ffa000);color:#5d4037;border-color:#ffe082;}
+.tab.keer.on{background:linear-gradient(135deg,#ef5350,#e53935);color:white;border-color:#ffcdd2;}
+.tab.deel.on{background:linear-gradient(135deg,#66bb6a,#43a047);color:white;border-color:#c8e6c9;}
 
-/* PUZZLE */
-.puzzle-wrap{max-width:380px;margin:4px auto 6px;padding:0 14px;}
-.puzzle-label{text-align:center;font-family:'Fredoka One',cursive;font-size:1.05rem;color:#888;margin-bottom:6px;}
-.puzzle-outer{background:white;border-radius:20px;padding:10px;box-shadow:0 6px 24px rgba(0,0,0,.12),0 0 0 3px #ffe082;position:relative;}
-#puzzleCanvas{display:block;border-radius:12px;width:100%;height:auto;}
-.puzzle-done-banner{display:none;position:absolute;inset:0;background:rgba(255,255,255,.88);border-radius:12px;align-items:center;justify-content:center;flex-direction:column;font-family:'Fredoka One',cursive;font-size:1.4rem;color:#ff7043;text-align:center;padding:14px;animation:popIn .4s ease both;}
+/* LAYOUT */
+.layout{max-width:1120px;margin:0 auto;padding:6px 14px 60px;display:grid;gap:16px;grid-template-columns:minmax(0,1fr);}
+@media(min-width:920px){.layout{grid-template-columns:minmax(0,1fr) 320px;}.side{position:sticky;top:12px;align-self:start;}}
+.card{background:white;border-radius:22px;box-shadow:0 6px 22px rgba(0,0,0,.1);}
+.main{padding:16px 18px 22px;border-top:8px solid var(--tc);--tc:#ffa000;--tl:#fff8e1;animation:popIn .35s ease both;}
+.main.keer{--tc:#e53935;--tl:#ffebee;}
+.main.deel{--tc:#43a047;--tl:#e8f5e9;}
+@keyframes popIn{from{opacity:0;transform:scale(.97) translateY(10px);}to{opacity:1;transform:none;}}
 
-/* GRID */
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px;max-width:1100px;margin:0 auto;padding:8px 14px 60px;}
-.cat-card{background:white;border-radius:22px;overflow:hidden;box-shadow:0 6px 22px rgba(0,0,0,.1);border:3px solid transparent;animation:popIn .4s ease both;}
-@keyframes popIn{from{opacity:0;transform:scale(.88) translateY(16px);}to{opacity:1;transform:scale(1) translateY(0);}}
+.seg{display:flex;background:#f3f3f3;border-radius:14px;padding:4px;gap:4px;max-width:360px;margin:0 auto 14px;}
+.seg button{flex:1;border:none;background:transparent;border-radius:11px;padding:9px 10px;font-family:'Fredoka One',cursive;font-size:1.05rem;color:#777;cursor:pointer;}
+.seg button.on{background:white;color:var(--tc);box-shadow:0 2px 8px rgba(0,0,0,.12);}
+
+.levels{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:14px;}
+.lvl{border:2px solid #e0e0e0;background:white;border-radius:999px;padding:6px 14px;font-weight:900;font-size:.9rem;color:#666;cursor:pointer;font-family:'Nunito',sans-serif;}
+.lvl.on{background:var(--tc);border-color:var(--tc);color:white;}
+
+.btn{border:none;cursor:pointer;font-family:'Fredoka One',cursive;font-size:1rem;padding:9px 16px;border-radius:13px;background:#eceff1;color:#455a64;transition:transform .15s;}
+.btn:hover{transform:scale(1.05);}.btn:active{transform:scale(.95);}
+.btn.on{background:#455a64;color:white;}
+.btn.go{background:linear-gradient(135deg,#42a5f5,#1e88e5);color:white;box-shadow:0 4px 14px rgba(30,136,229,.35);}
+.btn.step{background:linear-gradient(135deg,#ab47bc,#8e24aa);color:white;box-shadow:0 4px 14px rgba(142,36,170,.35);}
+.btn.big{font-size:1.1rem;padding:12px 20px;}
+.btn.tog.off{background:#eceff1;color:#90a4ae;}
+.btn.tog{background:#ffebee;color:#c62828;}
+.controls{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:14px;}
+
+/* SHEET (kolomsommen) */
+.ex-title{text-align:center;font-family:'Fredoka One',cursive;font-size:1.3rem;color:#555;margin-bottom:6px;}
+.ex-title b{color:var(--tc);}
+.sheet-wrap{overflow-x:auto;display:flex;justify-content:center;padding:6px 2px;}
+.sheet{--cw:clamp(26px,calc((100vw - 124px)/var(--n,8)),50px);display:inline-block;padding:14px 16px;border-radius:16px;background:#fbfdff;border:2px solid #e3eef9;
+  background-image:linear-gradient(90deg,rgba(144,202,249,.18) 1px,transparent 1px);background-size:var(--cw) 100%;background-position:16px 0;}
+.srow{display:flex;}
+.cell{width:var(--cw);height:calc(var(--cw)*1.1);display:flex;align-items:center;justify-content:center;font-family:'Fredoka One',cursive;font-size:calc(var(--cw)*.62);color:#333;position:relative;border-radius:8px;transition:background .25s;flex:none;}
+.srow.carry .cell{height:max(22px,calc(var(--cw)*.62));font-size:calc(var(--cw)*.38);color:#e53935;}
+.sheet.nocarry .srow.carry{display:none;}
+.cell.ul{border-bottom:3px solid #37474f;border-radius:8px 8px 0 0;}
+.cell.sign{color:#90a4ae;}
+.cell.dv{color:#6a1b9a;}
+.cell.rs{font-size:calc(var(--cw)*.45);color:#90a4ae;}
+.cell.hl{background:#fff1b8;box-shadow:inset 0 0 0 2px #ffd54f;}
+.cell input{width:88%;height:88%;border:2px dashed #cfd8dc;border-radius:9px;text-align:center;font-family:'Fredoka One',cursive;font-size:max(16px,1em);color:#1565c0;background:white;outline:none;padding:0;-webkit-text-fill-color:currentColor;opacity:1;}
+.cell.cin input{border-color:#ef9a9a;color:#e53935;font-size:max(16px,1em);}
+.cell input:disabled{background:transparent;}
+.cell.active input{border:3px solid #ffb300;background:#fffde7;box-shadow:0 0 0 4px rgba(255,179,0,.25);animation:pulse 1.3s ease-in-out infinite;}
+.cell.cin.active input{border-color:#e53935;box-shadow:0 0 0 4px rgba(229,57,53,.2);background:#fff5f5;}
+@keyframes pulse{50%{box-shadow:0 0 0 7px rgba(255,179,0,.1);}}
+.cell.ok input{border-color:transparent;background:transparent;}
+.cell.demo input{color:#7b1fa2;}
+.cell.cin.demo input{color:#e53935;}
+.cell.bad input{border:3px solid #ef5350;background:#ffebee;animation:wiggle .35s ease;}
+@keyframes wiggle{0%,100%{transform:translateX(0);}25%{transform:translateX(-5px);}75%{transform:translateX(5px);}}
+.cell.bring::before{content:'⬇';position:absolute;top:-.25em;right:-.15em;font-size:.42em;color:#43a047;z-index:1;}
+.cell .sv{color:#1565c0;}
+.srow.carry .cell .sv{color:#e53935;}
+
+/* BUBBLE */
+.bubble{display:flex;gap:10px;align-items:flex-start;background:#e3f2fd;border-radius:16px;padding:12px 14px;margin:12px auto 0;max-width:600px;font-weight:700;color:#0d47a1;min-height:56px;line-height:1.45;}
+.bubble .who{font-size:1.9rem;line-height:1;}
+.bubble.hint{background:#fff8e1;color:#6d4c00;}
+.bubble.good{background:#e8f5e9;color:#1b5e20;}
+.bubble.demo{background:#f3e5f5;color:#4a148c;}
+
+.tablehelp{margin-top:12px;display:flex;flex-wrap:wrap;gap:10px;justify-content:center;}
+.tbl{background:#fafafa;border:2px solid #eee;border-radius:14px;padding:8px 12px;}
+.tbl-h{font-family:'Fredoka One',cursive;color:var(--tc);text-align:center;margin-bottom:4px;}
+.tbl-g{display:grid;grid-template-columns:repeat(2,auto);gap:2px 16px;font-size:.92rem;}
+
+/* NULLEN */
+.nul-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px;}
+.sum-row{display:flex;align-items:center;background:#fafafa;border-radius:13px;padding:9px 12px;gap:6px;border:2px solid #efefef;transition:border-color .3s,background .3s;}
+.sum-row.correct{border-color:#66bb6a;background:#f1fff2;}.sum-row.wrong{border-color:#ef5350;background:#fff4f4;animation:wiggle .35s ease;}
+.sum-q{font-family:'Fredoka One',cursive;font-size:1.25rem;color:#333;white-space:nowrap;flex:1;}
+.eq{font-family:'Fredoka One',cursive;font-size:1.2rem;color:#ccc;}
+.ans-input{width:96px;border:2px solid #ddd;border-radius:10px;font-family:'Fredoka One',cursive;font-size:1.15rem;text-align:center;padding:6px 4px;color:#333;outline:none;background:white;}
+.ans-input:focus{border-color:#ffca28;box-shadow:0 0 0 3px rgba(255,202,40,.3);}
+.ans-input:disabled{background:#f5f5f5;color:#2e7d32;-webkit-text-fill-color:#2e7d32;opacity:1;}
+.hintbtn{border:none;background:none;font-size:1.2rem;cursor:pointer;opacity:.7;}
+.hintbtn:hover{opacity:1;}
+.ico{font-size:1.2rem;min-width:24px;text-align:center;}
+.nul-hint{display:none;font-size:.9rem;font-weight:700;color:#6d4c00;background:#fff8e1;border-radius:10px;padding:7px 11px;margin-top:5px;}
+.nul-hint.show{display:block;}
+
+
+/* DAGSOMMEN (origineel) */
+.tab.dag.on{background:linear-gradient(135deg,#ff7043,#ff9800);color:white;border-color:#ffccbc;}
+.main.dag{--tc:#ff7043;--tl:#fbe9e7;}
+.dag-top{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;margin-bottom:12px;}
+.date-label{font-size:.9rem;font-weight:700;color:#aaa;}
+.dag-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;}
+.cat-card{background:white;border-radius:20px;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,.08);border:3px solid transparent;}
 .cat-card.plus{border-color:#ef5350;}.cat-card.minus{border-color:#26c6da;}.cat-card.times{border-color:#ffca28;}.cat-card.divide{border-color:#66bb6a;}
-.cat-head{padding:13px 16px 11px;display:flex;align-items:center;gap:10px;color:white;}
+.cat-head{padding:11px 14px 9px;display:flex;align-items:center;gap:10px;color:white;}
 .cat-card.plus .cat-head{background:linear-gradient(135deg,#ef5350,#e53935);}
 .cat-card.minus .cat-head{background:linear-gradient(135deg,#26c6da,#00acc1);}
 .cat-card.times .cat-head{background:linear-gradient(135deg,#ffca28,#ffa000);color:#5d4037;}
 .cat-card.divide .cat-head{background:linear-gradient(135deg,#66bb6a,#43a047);}
-.cat-emoji{font-size:1.8rem;}.cat-name{font-family:'Fredoka One',cursive;font-size:1.35rem;}.cat-sym{margin-left:auto;font-family:'Fredoka One',cursive;font-size:2rem;opacity:.4;}
+.cat-emoji{font-size:1.6rem;}.cat-name{font-family:'Fredoka One',cursive;font-size:1.25rem;}.cat-sym{margin-left:auto;font-family:'Fredoka One',cursive;font-size:1.9rem;opacity:.4;}
 .prog-bar{height:7px;background:#f0f0f0;}.prog-fill{height:100%;width:0%;transition:width .5s ease;border-radius:0 4px 4px 0;}
 .cat-card.plus .prog-fill{background:#ef5350;}.cat-card.minus .prog-fill{background:#26c6da;}.cat-card.times .prog-fill{background:#ffca28;}.cat-card.divide .prog-fill{background:#66bb6a;}
-.sums-list{padding:12px 12px 14px;display:flex;flex-direction:column;gap:9px;}
-.sum-row{display:flex;align-items:center;background:#fafafa;border-radius:13px;padding:9px 12px;gap:6px;border:2px solid #efefef;transition:border-color .3s,background .3s;}
-.sum-row.correct{border-color:#66bb6a;background:#f1fff2;}.sum-row.wrong{border-color:#ef5350;background:#fff4f4;animation:wiggle .35s ease;}
-@keyframes wiggle{0%,100%{transform:translateX(0);}25%{transform:translateX(-6px);}75%{transform:translateX(6px);}}
-.sum-q{font-family:'Fredoka One',cursive;font-size:1.2rem;color:#333;white-space:nowrap;flex:1;}
-.eq{font-family:'Fredoka One',cursive;font-size:1.2rem;color:#ccc;}
-.ans-input{width:68px;border:2px solid #ddd;border-radius:10px;font-family:'Fredoka One',cursive;font-size:1.15rem;text-align:center;padding:6px 4px;color:#333;outline:none;background:white;transition:border-color .2s,box-shadow .2s;-moz-appearance:textfield;}
-.ans-input::-webkit-outer-spin-button,.ans-input::-webkit-inner-spin-button{-webkit-appearance:none;}
-.ans-input:focus{border-color:#90caf9;box-shadow:0 0 0 3px rgba(144,202,249,.3);}
-.ans-input:disabled{background:#f5f5f5;color:#999;}
-.ico{font-size:1.3rem;min-width:24px;text-align:center;}
+.sums-list{padding:12px;display:flex;flex-direction:column;gap:9px;}
+.sums-list .ans-input{width:72px;}
+
+/* UITLEG */
+.uitleg{line-height:1.55;font-size:1.02rem;}
+.uitleg h3{font-family:'Fredoka One',cursive;font-size:1.35rem;color:var(--tc);margin:18px 0 8px;}
+.uitleg h3:first-child{margin-top:0;}
+.uitleg p{margin:6px 0;}
+.steps{list-style:none;counter-reset:st;display:flex;flex-direction:column;gap:8px;}
+.steps li{counter-increment:st;position:relative;padding:8px 12px 8px 50px;background:var(--tl);border-radius:14px;}
+.steps li::before{content:counter(st);position:absolute;left:10px;top:8px;width:30px;height:30px;border-radius:50%;background:var(--tc);color:white;font-family:'Fredoka One',cursive;display:flex;align-items:center;justify-content:center;font-size:1.05rem;}
+.ex{display:inline-block;font-family:'Fredoka One',cursive;background:white;border:2px solid #eee;border-radius:8px;padding:0 8px;margin-left:4px;white-space:nowrap;}
+.examples{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-top:10px;}
+.exbox{background:#fafafa;border:2px solid #eee;border-radius:14px;padding:10px 12px;font-weight:700;text-align:center;}
+.exbox .q{font-family:'Fredoka One',cursive;font-size:1.35rem;color:var(--tc);}
+.exbox .a{font-family:'Fredoka One',cursive;font-size:1.25rem;color:#1565c0;}
+.exbox .z{color:#e53935;}
+.why{background:#e3f2fd;border-radius:14px;padding:12px 14px;margin-top:14px;}
+.tip{background:#fff8e1;border-radius:14px;padding:12px 14px;margin-top:12px;}
+.tip ul{margin:4px 0 0 20px;}
+.coins{font-size:1.6rem;letter-spacing:2px;margin:6px 0;}
+.mini-row{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:12px;}
+.mini .sheet{--cw:34px;padding:10px 12px;}
+.mini-txt p{margin:4px 0;}
+.red{color:#e53935;}
+.blue{color:#1565c0;}
+.dkmo{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:6px;}
+@media(max-width:560px){.dkmo{grid-template-columns:repeat(2,1fr);}}
+.dkmo div{background:var(--tl);border-radius:14px;padding:10px;text-align:center;font-weight:900;}
+.dkmo span{display:block;font-family:'Fredoka One',cursive;font-size:2rem;color:var(--tc);line-height:1.1;}
+.dkmo small{display:block;font-weight:700;color:#666;font-size:.85rem;margin-top:2px;}
+.notation{display:flex;align-items:flex-start;justify-content:center;gap:8px;font-family:'Fredoka One',cursive;font-size:2rem;margin:6px 0 4px;}
+.notation div{text-align:center;}
+.notation small{display:block;font-family:'Nunito',sans-serif;font-weight:900;font-size:.8rem;color:#888;}
+.notation .dv{color:#6a1b9a;}.notation .an{color:#1565c0;}.notation .sg{color:#90a4ae;}
+.u-actions{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:18px;}
+
+/* SIDE / PUZZLE */
+.side{display:flex;flex-direction:column;gap:10px;align-items:center;}
+.score-box{background:white;border-radius:16px;padding:9px 22px;font-family:'Fredoka One',cursive;font-size:1.35rem;color:#333;box-shadow:0 4px 14px rgba(0,0,0,.1),0 0 0 3px #ffd54f;display:flex;align-items:center;gap:7px;}
+.score-box .big{font-size:1.8rem;color:#7e57c2;}
+.puzzle-label{text-align:center;font-family:'Fredoka One',cursive;font-size:1rem;color:#888;max-width:320px;}
+.puzzle-outer{background:white;border-radius:20px;padding:10px;box-shadow:0 6px 24px rgba(0,0,0,.12),0 0 0 3px #ffe082;position:relative;width:100%;max-width:340px;}
+#puzzleCanvas{display:block;border-radius:12px;width:100%;height:auto;}
+.puzzle-done-banner{display:none;position:absolute;inset:0;background:rgba(255,255,255,.88);border-radius:12px;align-items:center;justify-content:center;flex-direction:column;font-family:'Fredoka One',cursive;font-size:1.4rem;color:#7e57c2;text-align:center;padding:14px;}
 
 #confetti-box{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1000;}
 .cf{position:absolute;top:-16px;border-radius:3px;animation:fall linear forwards;}
@@ -65,27 +182,139 @@ body{font-family:'Nunito',sans-serif;background:#fff9f0;min-height:100vh;
 <div id="confetti-box"></div>
 <div class="header">
   <h1>🧮 Rekenmeester!</h1>
-  <div class="sub">Groep 5 &amp; 6 — Dagelijkse sommen</div>
+  <div class="sub">Groep 5 &amp; 6 — dagsommen, keersommen &amp; staartdelingen</div>
 </div>
-<div class="scorebar">
-  <div class="date-label" id="dateLabel"></div>
-  <div class="score-box">⭐ Score: <span class="big" id="scoreNum">0</span>&nbsp;/ 12</div>
-  <button class="btn-new" onclick="newSums()">🔄 Nieuwe sommen</button>
+<nav class="tabs">
+  <button class="tab dag" data-t="dag"><span>🧮</span>Dagsommen</button>
+  <button class="tab nullen" data-t="nullen"><span>🔟</span>Keer met nullen</button>
+  <button class="tab keer" data-t="keer"><span>✖️</span>Keer onder elkaar</button>
+  <button class="tab deel" data-t="deel"><span>➗</span>Staartdeling</button>
+</nav>
+<div class="layout">
+  <section class="card main" id="main"></section>
+  <aside class="side">
+    <div class="score-box">⭐ Goed: <span class="big" id="scoreNum">0</span></div>
+    <div class="puzzle-label" id="puzzleLabel"></div>
+    <div class="puzzle-outer">
+      <canvas id="puzzleCanvas" width="360" height="270"></canvas>
+      <div class="puzzle-done-banner" id="puzzleDone"></div>
+    </div>
+  </aside>
 </div>
-<div class="puzzle-wrap">
-  <div class="puzzle-label" id="puzzleLabel">Los sommen op om het fantasiedier te onthullen! 🔍</div>
-  <div class="puzzle-outer">
-    <canvas id="puzzleCanvas" width="360" height="270"></canvas>
-    <div class="puzzle-done-banner" id="puzzleDone"></div>
+
+<!-- ================= UITLEG ================= -->
+<template id="tpl-nullen">
+  <h3>Het nullen-trucje 🪄</h3>
+  <ol class="steps">
+    <li><b>Haal de nullen weg</b> aan het eind van de getallen. <span class="ex">30 × 40 → 3 × 4</span></li>
+    <li><b>Reken de kleine som</b> uit met je tafels. <span class="ex">3 × 4 = 12</span></li>
+    <li><b>Tel hoeveel nullen je hebt weggehaald</b> en zet ze er weer achter. <span class="ex">2 nullen → 1200</span></li>
+  </ol>
+  <div class="examples">
+    <div class="exbox"><div class="q">4 × 30</div>4 × 3 = 12<br><span class="z">+ 1 nul</span><div class="a">= 120</div></div>
+    <div class="exbox"><div class="q">6 × 500</div>6 × 5 = 30<br><span class="z">+ 2 nullen</span><div class="a">= 3000</div></div>
+    <div class="exbox"><div class="q">20 × 300</div>2 × 3 = 6<br><span class="z">+ 3 nullen</span><div class="a">= 6000</div></div>
   </div>
-</div>
-<div class="grid" id="grid"></div>
+  <div class="why"><b>Waarom werkt dit?</b><br>
+    30 is hetzelfde als 3 briefjes van 10 euro. Doe je dat 4 keer, dan heb je 4 × 3 = <b>12 briefjes</b> van 10 euro.
+    <div class="coins">💶💶💶 💶💶💶 💶💶💶 💶💶💶</div>
+    12 briefjes van 10 euro is <b>€120</b>. Je rekent dus eigenlijk gewoon 4 × 3 en zet er een nul achter.
+  </div>
+  <div class="tip"><b>⚠️ Pas op!</b> Bij <b>50 × 40</b> reken je 5 × 4 = 20. Daar komen 2 nullen achter: <b>2000</b>.
+    De 0 van 20 hoort bij de kleine som, die laat je gewoon staan. Je telt alleen de nullen die je eerst <i>weg</i> hebt gehaald.</div>
+  <div class="tip"><b>💡 Keer 10, keer 100:</b> keer 10 = één nul erachter (10 × 45 = 450). Keer 100 = twee nullen erachter (100 × 7 = 700).</div>
+</template>
+
+<template id="tpl-keer">
+  <h3>Keersommen onder elkaar ✏️</h3>
+  <ol class="steps">
+    <li><b>Zet de getallen netjes onder elkaar</b>: enen onder de enen, tientallen onder de tientallen.</li>
+    <li><b>Begin altijd rechts</b>, bij de enen. Doe het onderste cijfer keer het bovenste cijfer.</li>
+    <li><b>Is de uitkomst 10 of meer?</b> Dan past hij niet in één hokje. Schrijf het <b>laatste cijfer</b> op en <b class="red">onthoud</b> de rest: zet het klein in het <span class="red">rode onthoud-vakje</span>, één hokje naar links.</li>
+    <li><b>Ga één hokje naar links.</b> Eerst <b>keer</b>, en daarna tel je het onthouden getal er <b>bij op</b>.</li>
+    <li><b>Bij het laatste cijfer</b> hoef je niets meer te onthouden: je schrijft de hele uitkomst op.</li>
+  </ol>
+  <div class="why"><b>Wat betekent "onthouden" eigenlijk?</b><br>
+    In elk hokje past maar <b>één cijfer</b>. 6 × 7 = 42. Dat zijn 4 tientallen en 2 enen.
+    De 2 enen schrijf je bij de enen. De 4 tientallen horen bij de tientallen, dus die neem je mee naar het hokje links ervan.
+    <div class="coins">🪙🪙 &nbsp;+&nbsp; 💶💶💶💶</div>
+    Net als met geld: 42 muntjes van 1 euro ruil je om in 4 briefjes van 10 en dan houd je 2 muntjes over.
+    De briefjes (de tientallen) gaan een hokje naar links. Dat is <b class="red">onthouden</b>.
+  </div>
+  <div class="mini-row">
+    <div class="mini" data-solved="mul:47:6"></div>
+    <div class="mini-txt">
+      <p><b>Voorbeeld: 47 × 6</b></p>
+      <p>① 6 × 7 = 42 → schrijf <b class="blue">2</b>, onthoud <b class="red">4</b></p>
+      <p>② 6 × 4 = 24, plus de <b class="red">4</b> = 28 → schrijf <b class="blue">28</b></p>
+      <p>Antwoord: <b class="blue">282</b></p>
+    </div>
+  </div>
+  <div class="tip"><b>⚠️ Eerst keer, dan plus!</b> In stap ② doe je 6 × 4 = 24 en dán pas + 4 = 28. Dus níet eerst 4 + 4 = 8 en dan 6 × 8.</div>
+
+  <h3>Twee cijfers onderaan? (bijvoorbeeld 34 × 26)</h3>
+  <ol class="steps">
+    <li><b>Rij 1:</b> reken alles keer de <b>enen</b> (de 6). 34 × 6 = 204.</li>
+    <li><b>Rij 2:</b> reken alles keer de <b>tientallen</b> (de 2). Die 2 is eigenlijk 20! Daarom zet je eerst een <b>0</b> bij de enen. 34 × 20 = 680.</li>
+    <li><b>Tel de twee rijen op</b>, weer van rechts naar links. Kom je op 10 of meer? Dan onthoud je weer: schrijf het laatste cijfer op, de 1 gaat naar links.</li>
+  </ol>
+  <div class="mini-row">
+    <div class="mini" data-solved="mul:34:26"></div>
+    <div class="mini-txt">
+      <p>Rij 1: 34 × 6 = <b class="blue">204</b></p>
+      <p>Rij 2: 34 × 20 = <b class="blue">680</b></p>
+      <p>Samen: 204 + 680 = <b class="blue">884</b></p>
+    </div>
+  </div>
+  <div class="tip">🎬 Druk hieronder op <b>Bekijk een voorbeeld</b>: dan zie je de som hokje voor hokje ontstaan, met uitleg bij elke stap.</div>
+</template>
+
+<template id="tpl-deel">
+  <h3>Zo schrijf je een staartdeling 📝</h3>
+  <div class="notation">
+    <div><span class="dv">4</span><small>deler</small></div>
+    <span class="sg">/</span>
+    <div><span>156</span><small>deeltal</small></div>
+    <span class="sg">\</span>
+    <div><span class="an">39</span><small>antwoord</small></div>
+  </div>
+  <p style="text-align:center">Je zegt: "156 gedeeld door 4". Links de deler, in het midden het getal dat je verdeelt, rechts komt het antwoord.</p>
+
+  <h3>Vier stappen, en dan weer opnieuw!</h3>
+  <div class="dkmo">
+    <div><span>D</span>Delen<small>Hoe vaak past de deler erin?</small></div>
+    <div><span>K</span>Keer<small>Antwoordcijfer × deler. Schrijf het eronder.</small></div>
+    <div><span>M</span>Min<small>Trek af.</small></div>
+    <div><span>O</span>Omlaag<small>Haal het volgende cijfer naar beneden.</small></div>
+  </div>
+  <p style="text-align:center;margin-top:8px">Ezelsbruggetje: <b>D</b>ikke <b>K</b>ippen <b>M</b>aken <b>O</b>meletten 🐔🍳</p>
+
+  <div class="mini-row">
+    <div class="mini" data-solved="div:156:4"></div>
+    <div class="mini-txt">
+      <p>Past 4 in de 1? Nee, te klein → neem <b>15</b>.</p>
+      <p><b>D</b>: 4 past 3 keer in 15 → schrijf <b class="blue">3</b> rechts</p>
+      <p><b>K</b>: 3 × 4 = <b class="blue">12</b>, schrijf onder de 15</p>
+      <p><b>M</b>: 15 − 12 = <b class="blue">3</b></p>
+      <p><b>O</b>: haal de 6 omlaag → <b class="blue">36</b></p>
+      <p><b>D</b>: 4 past 9 keer in 36 → <b class="blue">9</b> · <b>K</b>: 9 × 4 = 36 · <b>M</b>: 36 − 36 = 0</p>
+      <p>Antwoord: <b class="blue">39</b></p>
+    </div>
+  </div>
+  <div class="tip"><b>💡 Tips</b>
+    <ul>
+      <li>Past de deler niet in het eerste cijfer? Neem er dan een cijfer bij.</li>
+      <li>Na het aftrekken moet er <b>minder</b> overblijven dan de deler. Blijft er meer over? Dan past de deler er nog een keer extra in.</li>
+      <li>Blijft er aan het eind iets over? Dat heet de <b>rest</b>. Bijvoorbeeld 347 : 5 = 69 rest 2.</li>
+      <li>Weet je een tafel even niet? Klik dan op <b>🧾 Tafelhulp</b>.</li>
+      <li><b>Controle:</b> antwoord × deler (+ rest) = het getal waar je mee begon. 39 × 4 = 156 ✔️</li>
+    </ul>
+  </div>
+</template>
 
 <script>
 /* =========================================================
-   FANTASY HYBRID ANIMALS
-   Each animal is drawn with canvas 2D — a fun mix of two
-   real animals. We store the name and a draw function.
+   FANTASY HYBRID ANIMALS (uit Rekenmeester)
    ========================================================= */
 var W=360, H=270;
 
@@ -482,171 +711,72 @@ function label(c,name,mix){
 }
 
 /* =========================================================
-   PUZZLE ENGINE
+   PUZZEL — elke goede som onthult een stukje
    ========================================================= */
 var COLS=4,ROWS=3,pW=W/COLS,pH=H/ROWS;
 var pCanvas=document.getElementById('puzzleCanvas');
 var pCtx=pCanvas.getContext('2d');
-var sceneData=null, tileOrder=[], revealed=[], correctCount=0;
-var currentAnimal=-1;
+var sceneData=null,tileOrder=[],revealed=[],currentAnimal=-1,score=0;
 
 function pickAnimal(){
   var next;
   do{ next=Math.floor(Math.random()*ANIMALS.length); }while(next===currentAnimal && ANIMALS.length>1);
   currentAnimal=next;
 }
-
 function initPuzzle(){
   pickAnimal();
   ANIMALS[currentAnimal].draw(pCtx);
   sceneData=pCtx.getImageData(0,0,W,H);
-  shuffleTiles();
-  revealed=[];correctCount=0;
-  coverAll();
+  tileOrder=[];for(var i=0;i<12;i++)tileOrder.push(i);
+  for(var j=tileOrder.length-1;j>0;j--){var k=Math.floor(Math.random()*(j+1));var t=tileOrder[j];tileOrder[j]=tileOrder[k];tileOrder[k]=t;}
+  revealed=[];
+  for(var n=0;n<12;n++)drawCover(n);
   document.getElementById('puzzleDone').style.display='none';
   updatePuzzleLabel();
 }
-
-function shuffleTiles(){
-  tileOrder=[];for(var i=0;i<12;i++)tileOrder.push(i);
-  for(var j=tileOrder.length-1;j>0;j--){
-    var k=Math.floor(Math.random()*(j+1));var t=tileOrder[j];tileOrder[j]=tileOrder[k];tileOrder[k]=t;
-  }
-}
-
-function coverAll(){
-  for(var i=0;i<12;i++){drawCover(tileOrder[i],i);}
-}
-
-function drawCover(idx,num){
-  var col=idx%COLS,row=Math.floor(idx/COLS);
-  var x=col*pW,y=row*pH;
+function drawCover(idx){
+  var col=idx%COLS,row=Math.floor(idx/COLS),x=col*pW,y=row*pH;
   pCtx.fillStyle='#c8d6e5';pCtx.fillRect(x,y,pW,pH);
   pCtx.strokeStyle='white';pCtx.lineWidth=2;pCtx.strokeRect(x+1,y+1,pW-2,pH-2);
-  pCtx.fillStyle='#8fa8c0';
-  pCtx.font='bold 20px Nunito,sans-serif';
+  pCtx.fillStyle='#8fa8c0';pCtx.font='bold 20px Nunito,sans-serif';
   pCtx.textAlign='center';pCtx.textBaseline='middle';
   pCtx.fillText('?',x+pW/2,y+pH/2);
 }
-
-function revealTile(n){
-  var idx=tileOrder[n];
-  var col=idx%COLS,row=Math.floor(idx/COLS);
-  var x=col*pW,y=row*pH;
+function revealTile(){
+  var idx=tileOrder[revealed.length];
+  var col=idx%COLS,row=Math.floor(idx/COLS),x=col*pW,y=row*pH;
   if(sceneData)pCtx.putImageData(sceneData,0,0,x,y,pW,pH);
-  // sparkle burst
   for(var s=0;s<5;s++){
-    var sx=x+Math.random()*pW,sy=y+Math.random()*pH;
     pCtx.fillStyle='rgba(255,220,50,.85)';
-    pCtx.beginPath();pCtx.arc(sx,sy,3+Math.random()*3,0,Math.PI*2);pCtx.fill();
+    pCtx.beginPath();pCtx.arc(x+Math.random()*pW,y+Math.random()*pH,3+Math.random()*3,0,Math.PI*2);pCtx.fill();
   }
   setTimeout(function(){if(sceneData)pCtx.putImageData(sceneData,0,0,x,y,pW,pH);},450);
   revealed.push(idx);
   updatePuzzleLabel();
   if(revealed.length===12){
     setTimeout(function(){
-      var a=ANIMALS[currentAnimal];
-      var el=document.getElementById('puzzleDone');
-      el.innerHTML='🎉 '+a.name+'!<br><span style="font-size:.85rem">'+a.mix+'</span><br>'+a.emoji;
+      var a=ANIMALS[currentAnimal],el=document.getElementById('puzzleDone');
+      el.innerHTML='🎉 '+a.name+'!<br><span style="font-size:.85rem">'+a.mix+'</span><br>'+a.emoji+'<br><span style="font-size:.8rem;color:#888">Volgende goede som = nieuw dier</span>';
       el.style.display='flex';
     },600);
   }
 }
-
 function updatePuzzleLabel(){
-  var a=ANIMALS[currentAnimal];
-  var left=12-revealed.length;
-  if(left===0)document.getElementById('puzzleLabel').textContent='🎉 Je hebt de '+a.name+' onthuld!';
-  else document.getElementById('puzzleLabel').textContent='Nog '+left+' som'+(left===1?'':'men')+' — welk fantasiedier schuilt hierachter? 🔍';
+  var a=ANIMALS[currentAnimal],left=12-revealed.length;
+  document.getElementById('puzzleLabel').textContent=left===0
+    ?'🎉 Je hebt de '+a.name+' onthuld!'
+    :'Nog '+left+' goede som'+(left===1?'':'men')+'. Welk fantasiedier schuilt hierachter? 🔍';
 }
-
-/* =========================================================
-   SUMS
-   ========================================================= */
-var CATS=[
-  {id:'plus',  name:'Optellen',         emoji:'🟥',sym:'+',  cls:'plus'  },
-  {id:'minus', name:'Aftrekken',        emoji:'🟦',sym:'\u2212',cls:'minus' },
-  {id:'times', name:'Vermenigvuldigen', emoji:'🟨',sym:'\u00d7',cls:'times' },
-  {id:'divide',name:'Delen',            emoji:'🟩',sym:'\u00f7',cls:'divide'}
-];
-var state={},score=0;
-
-function rnd(a,b){return Math.floor(Math.random()*(b-a+1))+a;}
-function makeSum(t){
-  var a,b,ans,q;
-  if(t==='plus')  {a=rnd(10,99);b=rnd(10,99);ans=a+b;q=a+' + '+b;}
-  else if(t==='minus'){b=rnd(10,49);a=rnd(b+1,99);ans=a-b;q=a+' \u2212 '+b;}
-  else if(t==='times'){a=rnd(1,12);b=rnd(1,12);ans=a*b;q=a+' \u00d7 '+b;}
-  else            {b=rnd(2,12);ans=rnd(1,12);a=b*ans;q=a+' \u00f7 '+b;}
-  return{q:q,ans:ans};
+function addPoint(){
+  score++;
+  document.getElementById('scoreNum').textContent=score;
+  if(revealed.length>=12)initPuzzle();
+  revealTile();
 }
-
-function buildUI(sums){
-  state={};score=0;updateScore();
-  var grid=document.getElementById('grid');grid.innerHTML='';
-  CATS.forEach(function(cat,ci){
-    var card=document.createElement('div');
-    card.className='cat-card '+cat.cls;card.style.animationDelay=(ci*.09)+'s';
-    card.innerHTML='<div class="cat-head"><span class="cat-emoji">'+cat.emoji+'</span><span class="cat-name">'+cat.name+'</span><span class="cat-sym">'+cat.sym+'</span></div>'
-      +'<div class="prog-bar"><div class="prog-fill" id="prog-'+cat.id+'"></div></div>'
-      +'<div class="sums-list" id="list-'+cat.id+'"></div>';
-    grid.appendChild(card);
-    var list=document.getElementById('list-'+cat.id);
-    sums[cat.id].forEach(function(s,i){
-      var key=cat.id+'-'+i;
-      state[key]={ans:s.ans,status:'open'};
-      var row=document.createElement('div');
-      row.className='sum-row';row.id='row-'+key;
-      row.innerHTML='<span class="sum-q">'+s.q+'</span><span class="eq">=</span>'
-        +'<input class="ans-input" id="inp-'+key+'" type="number" placeholder="?">'
-        +'<span class="ico" id="ico-'+key+'"></span>';
-      list.appendChild(row);
-      var inp=document.getElementById('inp-'+key);
-      inp.addEventListener('input',function(){check(key,cat.id);});
-      inp.addEventListener('keydown',function(e){if(e.key==='Enter')nextInp(key);});
-    });
-  });
-}
-
-function check(key,catId){
-  var inp=document.getElementById('inp-'+key);
-  var val=parseInt(inp.value,10);
-  var info=state[key];
-  if(inp.value===''||isNaN(val))return;
-  var row=document.getElementById('row-'+key);
-  var ico=document.getElementById('ico-'+key);
-  if(val===info.ans){
-    if(info.status!=='correct'){
-      score++;info.status='correct';
-      row.className='sum-row correct';ico.textContent='✅';inp.disabled=true;
-      updateScore();updateProg(catId);
-      revealTile(correctCount);correctCount++;
-      if(score===12)celebrate();
-    }
-  } else {
-    if(info.status==='correct'){score--;updateScore();}
-    info.status='wrong';
-    row.className='sum-row';void row.offsetWidth;row.className='sum-row wrong';
-    ico.textContent='❌';
-  }
-}
-
-function nextInp(key){
-  var all=Array.from(document.querySelectorAll('.ans-input:not([disabled])'));
-  var cur=document.getElementById('inp-'+key);
-  var i=all.indexOf(cur);if(i>=0&&i<all.length-1)all[i+1].focus();
-}
-function updateScore(){document.getElementById('scoreNum').textContent=score;}
-function updateProg(catId){
-  var keys=Object.keys(state).filter(function(k){return k.startsWith(catId);});
-  var done=keys.filter(function(k){return state[k].status==='correct';}).length;
-  document.getElementById('prog-'+catId).style.width=Math.round((done/3)*100)+'%';
-}
-
-function celebrate(){
+function celebrate(n){
   var cols=['#ff7043','#ffca28','#26c6da','#66bb6a','#ef5350','#ab47bc','#ff80ab','#80d8ff'];
-  var box=document.getElementById('confetti-box');box.innerHTML='';
-  for(var i=0;i<90;i++){(function(){
+  var box=document.getElementById('confetti-box');
+  for(var i=0;i<(n||90);i++){(function(){
     var p=document.createElement('div');p.className='cf';
     var sz=8+Math.random()*10;p.style.width=sz+'px';p.style.height=(sz*1.3)+'px';
     p.style.left=(Math.random()*100)+'vw';p.style.background=cols[Math.floor(Math.random()*cols.length)];
@@ -655,21 +785,515 @@ function celebrate(){
   })();}
 }
 
-function newSums(){
-  document.getElementById('confetti-box').innerHTML='';
-  initPuzzle();
-  var sums={};
-  CATS.forEach(function(cat){sums[cat.id]=[makeSum(cat.id),makeSum(cat.id),makeSum(cat.id)];});
-  buildUI(sums);
+/* =========================================================
+   HULPJES
+   ========================================================= */
+var PLACE=['enen','tientallen','honderdtallen','duizendtallen','tienduizendtallen','honderdduizendtallen'];
+function rnd(a,b){return Math.floor(Math.random()*(b-a+1))+a;}
+function digitsR(n){return String(n).split('').reverse().map(Number);}
+function fmt(n){var s=String(n);return s.length>=5?s.replace(/\B(?=(\d{3})+(?!\d))/g,'.'):s;}
+function hasZero(n){return String(n).indexOf('0')>=0;}
+
+/* =========================================================
+   SHEET — een som op "ruitjespapier"
+   Elke cel heeft een waarde; invulcellen staan in volgorde
+   in `order` met een vraag (ask) en een uitleg (hint).
+   ========================================================= */
+function Sheet(n){this.n=n;this.rows=[];this.cells={};this.lines={};this.order=[];}
+Sheet.prototype.row=function(t){this.rows.push(t||'n');return this.rows.length-1;};
+Sheet.prototype.put=function(r,c,val,o){
+  o=o||{};var k=r+','+c;
+  this.cells[k]={r:r,c:c,val:String(val),kind:o.kind||'given',ask:o.ask||'',hint:o.hint||'',hl:o.hl||[],cls:o.cls||''};
+  if(o.kind==='input'||o.kind==='carry')this.order.push(k);
+  return k;
+};
+Sheet.prototype.line=function(r,c1,c2){for(var c=c1;c<=c2;c++)this.lines[r+','+c]=1;};
+
+/* ---------- keer onder elkaar ---------- */
+function buildMul(a,b,withCarry){
+  var A=digitsR(a),B=digitsR(b),P=a*b;
+  var Wd=Math.max(String(P).length,A.length,B.length)+1;
+  var S=new Sheet(Wd);
+  function col(pl){return Wd-1-pl;}
+  function key(r,pl){return r+','+col(pl);}
+  var r0=S.row(),r1=S.row(),aK=[],bK=[];
+  A.forEach(function(d,i){aK[i]=S.put(r0,col(i),d);});
+  B.forEach(function(d,i){bK[i]=S.put(r1,col(i),d);});
+  S.put(r1,0,'×',{kind:'sign'});
+  S.line(r1,0,Wd-1);
+  var first=true;
+  function pre(t){if(first){first=false;return 'Begin rechts, bij de enen. '+t;}return t;}
+
+  function partial(m,mK,s){
+    var rc=S.row('c'),rr=S.row(),res=[],carry=0,cK=null;
+    if(s===1){
+      res[0]=0;
+      S.put(rr,col(0),0,{kind:'input',
+        ask:'Nu reken je met de <b>'+m+'</b> van de tientallen. Die '+m+' is eigenlijk <b>'+(m*10)+'</b>! Wat zet je daarom eerst bij de enen?',
+        hint:'Omdat de '+m+' eigenlijk '+(m*10)+' is, zet je eerst een <b>0</b> bij de enen. Typ een 0.',hl:[mK]});
+    }
+    for(var i=0;i<A.length;i++){
+      var pr=m*A[i],p=pr+carry,pl=i+s,last=i===A.length-1,u=p%10,t=Math.floor(p/10);
+      var hl=[aK[i],mK];if(cK)hl.push(cK);
+      var calc=m+' × '+A[i]+(carry?' en tel de <span class="red">'+carry+'</span> erbij die je onthouden hebt':'');
+      var full=m+' × '+A[i]+' = '+pr+(carry?'. Plus de <span class="red">'+carry+'</span> die je onthouden had: '+pr+' + '+carry+' = <b>'+p+'</b>':'');
+      S.put(rr,col(pl),u,{kind:'input',
+        ask:pre('Reken: <b>'+calc+'</b>. Welk cijfer schrijf je bij de '+PLACE[pl]+'?'),
+        hint:full+'. '+(t&&!last?'In een hokje past maar één cijfer: schrijf de <b>'+u+'</b> op.':'Schrijf de <b>'+u+'</b> op.'),hl:hl});
+      res[pl]=u;cK=null;
+      if(last){
+        if(t>0){
+          S.put(rr,col(pl+1),t,{kind:'input',ask:'Dit was het laatste cijfer. Wat schrijf je er nog voor?',
+            hint:'Je bent klaar met rekenen, dus je hoeft niets meer te onthouden. De <b>'+t+'</b> van '+p+' schrijf je er gewoon voor.',hl:hl});
+          res[pl+1]=t;
+        }
+      }else if(t>0&&withCarry){
+        cK=S.put(rc,col(pl+1),t,{kind:'carry',
+          ask:'Je had <b>'+p+'</b> en hebt de '+u+' opgeschreven. Wat moet je <span class="red">onthouden</span>? Zet het in het rode vakje.',
+          hint:'De <b>'+t+'</b> van '+p+' onthoud je. Die schuift één hokje naar links, naar de '+PLACE[pl+1]+'. Typ een <b class="red">'+t+'</b> in het rode onthoud-vakje.'});
+      }
+      carry=t;
+    }
+    return {row:rr,res:res};
+  }
+
+  if(B.length===1){partial(B[0],bK[0],0);}
+  else{
+    var p1=partial(B[0],bK[0],0),p2=partial(B[1],bK[1],1);
+    S.put(p2.row,0,'+',{kind:'sign'});S.line(p2.row,0,Wd-1);
+    var rc=S.row('c'),rr=S.row(),n=Math.max(p1.res.length,p2.res.length),carry=0,cK=null;
+    for(var j=0;j<n;j++){
+      var x=p1.res[j],y=p2.res[j],parts=[],hl=[];
+      if(x!==undefined){parts.push(x);hl.push(key(p1.row,j));}
+      if(y!==undefined){parts.push(y);hl.push(key(p2.row,j));}
+      if(cK)hl.push(cK);
+      var sum=(x||0)+(y||0)+carry,u=sum%10,t=Math.floor(sum/10),last=j===n-1,ask,hint;
+      var expr=parts.join(' + ')+(carry?' + <span class="red">'+carry+'</span> (onthouden)':'');
+      if(parts.length+(carry?1:0)===1){
+        ask='Hier staat alleen een '+sum+'. Wat schrijf je op?';
+        hint='Er valt niets op te tellen: schrijf de <b>'+sum+'</b> gewoon op.';
+      }else{
+        ask='Tel op: <b>'+expr+'</b>. Welk cijfer schrijf je bij de '+PLACE[j]+'?';
+        hint=expr+' = <b>'+sum+'</b>. Schrijf de <b>'+u+'</b> op.';
+      }
+      if(j===0)ask='Nu tel je de twee rijen bij elkaar op. Begin weer rechts. '+ask;
+      S.put(rr,col(j),u,{kind:'input',ask:ask,hint:hint,hl:hl});
+      cK=null;
+      if(last){
+        if(t>0)S.put(rr,col(j+1),t,{kind:'input',ask:'Laatste stap! Wat schrijf je er nog voor?',
+          hint:'Je bent klaar met optellen. De <b>'+t+'</b> van '+sum+' schrijf je er gewoon voor.',hl:hl});
+      }else if(t>0&&withCarry){
+        cK=S.put(rc,col(j+1),t,{kind:'carry',
+          ask:'Je had <b>'+sum+'</b> en hebt de '+u+' opgeschreven. Wat moet je <span class="red">onthouden</span>?',
+          hint:'De <b>'+t+'</b> van '+sum+' onthoud je: typ een <b class="red">'+t+'</b> in het rode vakje bij de '+PLACE[j+1]+'.'});
+      }
+      carry=t;
+    }
+  }
+  S.title=a+' × '+b;
+  S.doneMsg=a+' × '+b+' = <b>'+fmt(P)+'</b>.';
+  S.tables=B.filter(function(d,i,arr){return d>1&&arr.indexOf(d)===i;});
+  return S;
 }
 
-function setDate(){
+/* ---------- staartdeling ---------- */
+function buildDiv(n,d){
+  var ns=String(n),N=ns.split('').map(Number),D=String(d),dl=D.length;
+  var q=Math.floor(n/d),rest=n%d,Q=String(q),R=String(rest);
+  var S=new Sheet(dl+1+N.length+1+Q.length+(rest?1+R.length:0));
+  var r0=S.row(),dK=[],nK=[];
+  for(var i=0;i<dl;i++)dK.push(S.put(r0,i,D[i],{cls:'dv'}));
+  S.put(r0,dl,'/',{kind:'sign'});
+  var x0=dl+1;
+  N.forEach(function(v,i){nK.push(S.put(r0,x0+i,v));});
+  S.put(r0,x0+N.length,'\\',{kind:'sign'});
+  var q0=x0+N.length+1;
+  var k=1;while(parseInt(ns.slice(0,k),10)<d)k++;
+  var cur=parseInt(ns.slice(0,k),10),cs=x0,ce=x0+k-1,curK=nK.slice(0,k),qi=0,lastRemK=[];
+  while(true){
+    var qd=Math.floor(cur/d),pr=qd*d,rem=cur-pr,more=ce<x0+N.length-1;
+    var ask='Hoe vaak past <b>'+d+'</b> in <b>'+cur+'</b>?';
+    if(qi===0&&k>1)ask='Past '+d+' in '+ns.slice(0,k-1)+'? Nee, dat is te weinig! Neem daarom <b>'+cur+'</b>. '+ask;
+    else if(qi===0)ask='Begin links. '+ask;
+    var qK=S.put(r0,q0+qi,qd,{kind:'input',ask:'<b>D – Delen:</b> '+ask,
+      hint:d+' × '+qd+' = '+pr+' en '+d+' × '+(qd+1)+' = '+((qd+1)*d)+', dat is te veel. Dus '+d+' past <b>'+qd+'</b> keer in '+cur+'. Schrijf '+qd+' achter de streep.',
+      hl:curK.concat(dK)});
+    var rp=S.row(),ps=String(pr),pK=[];
+    for(var a=0;a<ps.length;a++)pK.push(S.put(rp,ce-ps.length+1+a,ps[a],{kind:'input',
+      ask:'<b>K – Keer:</b> reken '+qd+' × '+d+' en schrijf het antwoord onder de '+cur+'.'+(ps.length>1?' Typ van links naar rechts.':''),
+      hint:qd+' × '+d+' = <b>'+pr+'</b>. Schrijf '+pr+' onder de '+cur+', met het laatste cijfer er recht onder.',
+      hl:[qK].concat(dK)}));
+    S.line(rp,cs,ce);
+    var rr=S.row(),rK=[];
+    if(rem>0||!more){
+      var rs=String(rem);
+      for(var b=0;b<rs.length;b++)rK.push(S.put(rr,ce-rs.length+1+b,rs[b],{kind:'input',
+        ask:'<b>M – Min:</b> trek af: <b>'+cur+' − '+pr+'</b>.',
+        hint:cur+' − '+pr+' = <b>'+rem+'</b>.'+(!more&&rem?' '+rem+' is kleiner dan '+d+', dus '+d+' past er niet meer in.':''),
+        hl:curK.concat(pK)}));
+    }
+    if(!more){lastRemK=rK;break;}
+    var nc=ce+1,nd=N[nc-x0];
+    var bK=S.put(rr,nc,nd,{kind:'input',cls:'bring',
+      ask:(rem===0?'<b>M – Min:</b> '+cur+' − '+pr+' = 0, er blijft niets over. ':'')+'<b>O – Omlaag:</b> haal het volgende cijfer naar beneden.',
+      hint:'Het volgende cijfer van '+ns+' is de <b>'+nd+'</b>. Zet die ernaast'+(rem?': nu heb je '+(rem*10+nd):'')+'.',
+      hl:[nK[nc-x0]]});
+    curK=rK.concat([bK]);
+    cs=rem>0?ce-String(rem).length+1:nc;ce=nc;cur=rem*10+nd;qi++;
+  }
+  if(rest){
+    S.put(r0,q0+Q.length,'r',{kind:'sign',cls:'rs'});
+    for(var c=0;c<R.length;c++)S.put(r0,q0+Q.length+1+c,R[c],{kind:'input',
+      ask:'Er blijft iets over. Hoeveel is de <b>rest</b>? Schrijf het achter de r.',
+      hint:'Onderaan blijft <b>'+rest+'</b> over. Dat is de rest: schrijf '+rest+' achter de r.',hl:lastRemK});
+  }
+  S.title=n+' : '+d;
+  S.doneMsg=n+' : '+d+' = <b>'+q+(rest?' rest '+rest:'')+'</b>. Controle: '+q+' × '+d+(rest?' + '+rest:'')+' = '+n+' ✔️';
+  S.tables=[d];
+  return S;
+}
+
+/* ---------- generators ---------- */
+function genMul(l){
+  var a,b;
+  if(l===0){do{a=rnd(12,99);b=rnd(3,9);}while(a%10===0||b*(a%10)<10);}
+  else if(l===1){do{a=rnd(102,999);b=rnd(3,9);}while(a%10===0||b*(a%10)<10);}
+  else if(l===2){do{a=rnd(12,99);b=rnd(21,99);}while(a%10===0||b%10===0);}
+  else{do{a=rnd(102,999);b=rnd(21,99);}while(a%10===0||b%10===0);}
+  return [a,b];
+}
+function genDiv(l){
+  var d,q,n;
+  if(l===0){do{d=rnd(2,9);q=rnd(11,49);n=q*d;}while(n>99||hasZero(q));}
+  else if(l===1){do{d=rnd(2,9);q=rnd(Math.ceil(100/d),Math.floor(999/d));n=q*d;}while(hasZero(q));}
+  else if(l===2){do{d=rnd(3,9);n=rnd(100,999);q=Math.floor(n/d);}while(n%d===0||hasZero(q));}
+  else{do{d=rnd(11,25);q=rnd(12,59);n=q*d;}while(n>999||hasZero(q));}
+  return [n,d];
+}
+var DEMO={keer:[[47,6],[238,4],[34,26],[254,36]],deel:[[72,3],[156,4],[347,5],[408,17]]};
+
+/* ---------- tekenen ---------- */
+function renderSheet(S,host,prefix,solved){
+  host.innerHTML='';
+  var g=document.createElement('div');g.className='sheet';g.style.setProperty('--n',S.n);
+  S.rows.forEach(function(t,r){
+    var row=document.createElement('div');row.className='srow'+(t==='c'?' carry':'');
+    for(var c=0;c<S.n;c++){
+      var k=r+','+c,cell=S.cells[k],el=document.createElement('div');
+      el.className='cell';el.id=prefix+'-'+r+'-'+c;
+      if(S.lines[k])el.classList.add('ul');
+      if(cell){
+        if(cell.cls)el.classList.add(cell.cls);
+        if(cell.kind==='given')el.textContent=cell.val;
+        else if(cell.kind==='sign'){el.textContent=cell.val;el.classList.add('sign');}
+        else{
+          el.classList.add(cell.kind==='carry'?'cin':'in');
+          if(solved){el.innerHTML='<span class="sv">'+cell.val+'</span>';}
+          else{
+            var inp=document.createElement('input');
+            inp.type='text';inp.inputMode='numeric';inp.autocomplete='off';inp.disabled=true;inp.dataset.k=k;
+            inp.setAttribute('aria-label',cell.kind==='carry'?'onthoud-vakje':'cijfer');
+            el.appendChild(inp);
+          }
+        }
+      }
+      row.appendChild(el);
+    }
+    g.appendChild(row);
+  });
+  host.appendChild(g);
+  return g;
+}
+function renderMinis(root){
+  root.querySelectorAll('.mini[data-solved]').forEach(function(el,i){
+    var p=el.dataset.solved.split(':');
+    var S=p[0]==='mul'?buildMul(+p[1],+p[2],true):buildDiv(+p[1],+p[2]);
+    renderSheet(S,el,'x'+i,true);
+  });
+}
+
+/* =========================================================
+   APP
+   ========================================================= */
+var TOPICS={
+  dag:{levels:[]},
+  nullen:{levels:['× tientallen','× honderdtallen','nullen × nullen']},
+  keer:{levels:['47 × 6','238 × 4','34 × 26','254 × 36']},
+  deel:{levels:['72 : 3','156 : 4','met rest','deler met 2 cijfers']}
+};
+var app={topic:'dag',view:{nullen:'uitleg',keer:'uitleg',deel:'uitleg'},level:{nullen:0,keer:0,deel:0},carry:true,table:false};
+var WS={S:null,idx:0,mode:'practice',tries:0,mistakes:0,done:false,prob:null};
+var pendingDemo=false;
+var main=document.getElementById('main');
+
+function render(){
+  var t=app.topic;
+  document.querySelectorAll('.tab').forEach(function(b){b.classList.toggle('on',b.dataset.t===t);});
+  main.className='card main '+t;
+  void main.offsetWidth;main.style.animation='none';void main.offsetWidth;main.style.animation='';
+  if(t==='dag'){renderDag();return;}
+  var v=app.view[t];
+  var seg='<div class="seg"><button data-v="uitleg" class="'+(v==='uitleg'?'on':'')+'">📖 Uitleg</button><button data-v="oefenen" class="'+(v==='oefenen'?'on':'')+'">✏️ Oefenen</button></div>';
+  if(v==='uitleg'){
+    main.innerHTML=seg+'<div class="uitleg">'+document.getElementById('tpl-'+t).innerHTML+'</div>'
+      +'<div class="u-actions">'+(t!=='nullen'?'<button class="btn big step" data-act="demo">🎬 Bekijk een voorbeeld stap voor stap</button>':'')
+      +'<button class="btn big go" data-act="practice">✏️ Zelf oefenen</button></div>';
+    renderMinis(main);
+    return;
+  }
+  var lv='<div class="levels">'+TOPICS[t].levels.map(function(l,i){
+    return '<button class="lvl'+(i===app.level[t]?' on':'')+'" data-l="'+i+'">'+(i+1)+'. '+l+'</button>';}).join('')+'</div>';
+  if(t==='nullen'){
+    main.innerHTML=seg+lv+'<div class="nul-grid" id="nulGrid"></div>'
+      +'<div class="controls"><button class="btn" data-act="newnul">🔄 Nieuwe reeks</button><button class="btn" data-v="uitleg">📖 Hoe werkt het trucje?</button></div>';
+    document.getElementById('nulGrid').addEventListener('input',function(e){if(e.target.dataset.i!==undefined)checkNul(e.target);});
+    newNullen();
+  }else{
+    main.innerHTML=seg+lv
+      +'<div class="ex-title" id="exTitle"></div>'
+      +'<div class="sheet-wrap" id="sheetHost"></div>'
+      +'<div class="bubble" id="bubble"><span class="who">🦉</span><span id="bubbleTxt"></span></div>'
+      +'<div class="controls">'
+      +'<button class="btn" data-act="hint" id="bHint">💡 Hint</button>'
+      +'<button class="btn step" data-act="step" id="bStep">▶ Volgende stap</button>'
+      +'<button class="btn" data-act="next" id="bNext">🔄 Nieuwe som</button>'
+      +'<button class="btn" data-act="ex" id="bEx">🎬 Voorbeeld</button>'
+      +(t==='keer'?'<button class="btn tog" data-act="carry" id="bCarry"></button>':'')
+      +'<button class="btn" data-act="table" id="bTable">🧾 Tafelhulp</button>'
+      +'</div><div class="tablehelp" id="tableHelp"></div>';
+    document.getElementById('sheetHost').addEventListener('input',onSheetInput);
+    var demo=pendingDemo;pendingDemo=false;
+    newSheet(demo?'demo':'practice');
+  }
+}
+
+/* ---------- kolomsom besturing ---------- */
+function cellEl(k){var p=k.split(',');return document.getElementById('m-'+p[0]+'-'+p[1]);}
+function say(html,type){
+  var b=document.getElementById('bubble');if(!b)return;
+  b.className='bubble '+(type||'');
+  b.querySelector('.who').textContent=type==='good'?'🎉':type==='hint'?'💡':'🦉';
+  document.getElementById('bubbleTxt').innerHTML=html;
+}
+function newSheet(mode,prob){
+  var t=app.topic,l=app.level[t];
+  if(!prob)prob=mode==='demo'?DEMO[t][l]:(t==='keer'?genMul(l):genDiv(l));
+  WS.prob=prob;WS.mode=mode;WS.idx=0;WS.mistakes=0;WS.tries=0;WS.done=false;
+  WS.S=t==='keer'?buildMul(prob[0],prob[1],app.carry):buildDiv(prob[0],prob[1]);
+  var g=renderSheet(WS.S,document.getElementById('sheetHost'),'m',false);
+  if(t==='keer'&&!app.carry)g.classList.add('nocarry');
+  document.getElementById('exTitle').innerHTML=(mode==='demo'?'🎬 Voorbeeld: ':'Reken uit: ')+'<b>'+WS.S.title+'</b>';
+  var bStep=document.getElementById('bStep'),bNext=document.getElementById('bNext');
+  bStep.style.display=mode==='demo'?'':'none';bStep.textContent='▶ Volgende stap';
+  document.getElementById('bHint').style.display=mode==='demo'?'none':'';
+  document.getElementById('bEx').style.display=mode==='demo'?'none':'';
+  bNext.textContent=mode==='demo'?'✏️ Zelf oefenen':'🔄 Nieuwe som';bNext.classList.remove('go');
+  var bc=document.getElementById('bCarry');
+  if(bc){bc.textContent='🔴 Onthoud-vakjes: '+(app.carry?'aan':'uit');bc.classList.toggle('off',!app.carry);}
+  updateTable();
+  activate();
+}
+function activate(){
+  document.querySelectorAll('#sheetHost .hl,#sheetHost .active').forEach(function(e){e.classList.remove('hl','active');});
+  if(WS.idx>=WS.S.order.length){finishSheet();return;}
+  var k=WS.S.order[WS.idx],cell=WS.S.cells[k],el=cellEl(k);
+  el.classList.add('active');
+  cell.hl.forEach(function(h){var e=cellEl(h);if(e)e.classList.add('hl');});
+  WS.tries=0;
+  if(WS.mode==='demo'){say(cell.hint,'demo');}
+  else{
+    say(cell.ask);
+    var inp=el.querySelector('input');inp.disabled=false;inp.value='';
+    inp.focus({preventScroll:true});
+  }
+}
+function onSheetInput(e){
+  var inp=e.target;if(!inp.dataset||!inp.dataset.k||WS.mode!=='practice')return;
+  var v=inp.value.replace(/\D/g,'').slice(-1);inp.value=v;if(!v)return;
+  var k=inp.dataset.k;if(k!==WS.S.order[WS.idx])return;
+  var cell=WS.S.cells[k],el=cellEl(k);
+  if(v===cell.val){
+    el.classList.remove('bad');el.classList.add('ok');inp.disabled=true;
+    WS.idx++;activate();
+  }else{
+    WS.tries++;WS.mistakes++;
+    el.classList.remove('bad');void el.offsetWidth;el.classList.add('bad');
+    if(WS.tries>=2)say('Nog niet goed. '+cell.hint,'hint');
+    else say('Nog niet goed, probeer het nog eens! '+cell.ask);
+    setTimeout(function(){if(!inp.disabled)inp.select();},30);
+  }
+}
+function showHint(){
+  if(WS.done||!WS.S)return;
+  say(WS.S.cells[WS.S.order[WS.idx]].hint,'hint');
+  var el=cellEl(WS.S.order[WS.idx]),inp=el&&el.querySelector('input');if(inp)inp.focus({preventScroll:true});
+}
+function demoStep(){
+  if(WS.done){newSheet('practice');return;}
+  var k=WS.S.order[WS.idx],cell=WS.S.cells[k],el=cellEl(k);
+  el.querySelector('input').value=cell.val;el.classList.add('ok','demo');
+  WS.idx++;activate();
+}
+function finishSheet(){
+  WS.done=true;
+  if(WS.mode==='demo'){
+    say('Klaar! '+WS.S.doneMsg+' Probeer het nu zelf!','good');
+    document.getElementById('bStep').textContent='✏️ Zelf oefenen';
+    return;
+  }
+  say('Goed gedaan! '+WS.S.doneMsg+(WS.mistakes===0?' Helemaal zonder fouten! ⭐':''),'good');
+  addPoint();celebrate(40);
+  var bNext=document.getElementById('bNext');bNext.textContent='Volgende som ▶';bNext.classList.add('go');bNext.focus({preventScroll:true});
+}
+function updateTable(){
+  var el=document.getElementById('tableHelp');if(!el)return;
+  document.getElementById('bTable').classList.toggle('on',app.table);
+  el.style.display=app.table?'':'none';
+  if(!app.table||!WS.S)return;
+  el.innerHTML=WS.S.tables.map(function(n){
+    var rows='';for(var i=1;i<=10;i++)rows+='<span>'+i+' × '+n+' = <b>'+(i*n)+'</b></span>';
+    return '<div class="tbl"><div class="tbl-h">Tafel van '+n+'</div><div class="tbl-g">'+rows+'</div></div>';
+  }).join('');
+}
+
+/* ---------- keer met nullen ---------- */
+var NUL={items:[],done:0};
+function genNul(l){
+  var a,b,t=rnd(0,2);
+  if(l===0){var m=rnd(2,9),x=rnd(2,9)*10;if(Math.random()<.5){a=m;b=x;}else{a=x;b=m;}}
+  else if(l===1){
+    if(t===0){a=rnd(2,9);b=rnd(2,9)*100;}
+    else if(t===1){a=rnd(2,9)*100;b=rnd(2,9);}
+    else{a=Math.random()<.5?10:100;b=rnd(11,99);if(Math.random()<.5){var s=a;a=b;b=s;}}
+  }else{
+    if(t===0){a=rnd(2,9)*10;b=rnd(2,9)*10;}
+    else if(t===1){a=rnd(2,9)*10;b=rnd(2,9)*100;if(Math.random()<.5){var s2=a;a=b;b=s2;}}
+    else{a=rnd(2,9)*100;b=rnd(2,9)*100;}
+  }
+  return {a:a,b:b,ans:a*b,tries:0};
+}
+function stripZ(n){var z=0;while(n%10===0&&n>0){n/=10;z++;}return {x:n,z:z};}
+function nulHint(s){
+  var A=stripZ(s.a),B=stripZ(s.b),sm=A.x*B.x,z=A.z+B.z,w=z===1?'nul':'nullen';
+  return 'Haal de nullen weg: <b>'+A.x+' × '+B.x+' = '+sm+'</b>. Je hebt '+z+' '+w+' weggehaald, dus zet je er '+z+' '+w+' achter: <b>'+fmt(s.ans)+'</b>.'
+    +(sm%10===0?' Let op: de 0 van '+sm+' hoort bij de kleine som, die blijft gewoon staan!':'');
+}
+function newNullen(){
+  var l=app.level.nullen,seen={},items=[];
+  while(items.length<8){var s=genNul(l),k=s.a+'x'+s.b;if(seen[k])continue;seen[k]=1;items.push(s);}
+  NUL.items=items;NUL.done=0;
+  document.getElementById('nulGrid').innerHTML=items.map(function(s,i){
+    return '<div class="nul-item" id="nul'+i+'"><div class="sum-row"><span class="sum-q">'+s.a+' × '+s.b+'</span><span class="eq">=</span>'
+      +'<input class="ans-input" inputmode="numeric" autocomplete="off" placeholder="?" data-i="'+i+'">'
+      +'<button class="hintbtn" data-act="nulhint" data-i="'+i+'" title="Hint">💡</button><span class="ico"></span></div>'
+      +'<div class="nul-hint">'+nulHint(s)+'</div></div>';
+  }).join('');
+}
+function checkNul(inp){
+  var i=+inp.dataset.i,s=NUL.items[i],v=inp.value.replace(/\D/g,''),row=inp.parentNode,ico=row.querySelector('.ico');
+  if(v.length<String(s.ans).length){row.className='sum-row';ico.textContent='';return;}
+  if(+v===s.ans){
+    row.className='sum-row correct';ico.textContent='✅';inp.disabled=true;NUL.done++;addPoint();
+    var nxt=document.querySelector('#nulGrid .ans-input:not([disabled])');if(nxt)nxt.focus({preventScroll:true});
+    if(NUL.done===NUL.items.length)celebrate();
+  }else{
+    row.className='sum-row';void row.offsetWidth;row.className='sum-row wrong';ico.textContent='❌';
+    if(++s.tries>=2)document.querySelector('#nul'+i+' .nul-hint').classList.add('show');
+  }
+}
+
+/* ---------- dagsommen (het originele Rekenmeester-blad) ---------- */
+var CATS=[
+  {id:'plus',  name:'Optellen',         emoji:'🟥',sym:'+'},
+  {id:'minus', name:'Aftrekken',        emoji:'🟦',sym:'−'},
+  {id:'times', name:'Vermenigvuldigen', emoji:'🟨',sym:'×'},
+  {id:'divide',name:'Delen',            emoji:'🟩',sym:'÷'}
+];
+var DAG=null;
+function makeSum(t){
+  var a,b,ans,q;
+  if(t==='plus')  {a=rnd(10,99);b=rnd(10,99);ans=a+b;q=a+' + '+b;}
+  else if(t==='minus'){b=rnd(10,49);a=rnd(b+1,99);ans=a-b;q=a+' − '+b;}
+  else if(t==='times'){a=rnd(1,12);b=rnd(1,12);ans=a*b;q=a+' × '+b;}
+  else            {b=rnd(2,12);ans=rnd(1,12);a=b*ans;q=a+' ÷ '+b;}
+  return {q:q,ans:ans,status:'open',val:''};
+}
+function newDag(){
+  DAG={sums:{},score:0};
+  CATS.forEach(function(c){DAG.sums[c.id]=[makeSum(c.id),makeSum(c.id),makeSum(c.id)];});
+}
+function dateLabel(){
   var d=new Date();
   var days=['zondag','maandag','dinsdag','woensdag','donderdag','vrijdag','zaterdag'];
   var mo=['januari','februari','maart','april','mei','juni','juli','augustus','september','oktober','november','december'];
-  document.getElementById('dateLabel').textContent=days[d.getDay()]+' '+d.getDate()+' '+mo[d.getMonth()]+' '+d.getFullYear();
+  return days[d.getDay()]+' '+d.getDate()+' '+mo[d.getMonth()]+' '+d.getFullYear();
 }
-setDate();newSums();
+function renderDag(){
+  if(!DAG)newDag();
+  var h='<div class="dag-top"><span class="date-label">'+dateLabel()+'</span>'
+    +'<span class="score-box" style="font-size:1.1rem;padding:6px 16px">Vandaag: <span class="big" id="dagScore" style="font-size:1.4rem">'+DAG.score+'</span>&nbsp;/ 12</span>'
+    +'<button class="btn go" data-act="newdag">🔄 Nieuwe sommen</button></div><div class="dag-grid">';
+  CATS.forEach(function(cat){
+    var done=DAG.sums[cat.id].filter(function(s){return s.status==='correct';}).length;
+    h+='<div class="cat-card '+cat.id+'"><div class="cat-head"><span class="cat-emoji">'+cat.emoji+'</span><span class="cat-name">'+cat.name+'</span><span class="cat-sym">'+cat.sym+'</span></div>'
+      +'<div class="prog-bar"><div class="prog-fill" id="prog-'+cat.id+'" style="width:'+Math.round(done/3*100)+'%"></div></div><div class="sums-list">';
+    DAG.sums[cat.id].forEach(function(s,i){
+      var ok=s.status==='correct';
+      h+='<div class="sum-row'+(ok?' correct':'')+'"><span class="sum-q">'+s.q+'</span><span class="eq">=</span>'
+        +'<input class="ans-input" inputmode="numeric" autocomplete="off" placeholder="?" data-c="'+cat.id+'" data-i="'+i+'" value="'+s.val+'"'+(ok?' disabled':'')+'>'
+        +'<span class="ico">'+(ok?'✅':'')+'</span></div>';
+    });
+    h+='</div></div>';
+  });
+  main.innerHTML=h+'</div>';
+}
+function checkDag(inp){
+  var s=DAG.sums[inp.dataset.c][+inp.dataset.i],v=inp.value.replace(/\D/g,''),row=inp.parentNode,ico=row.querySelector('.ico');
+  s.val=v;
+  if(!v||v.length<String(s.ans).length){row.className='sum-row';ico.textContent='';return;}
+  if(+v===s.ans){
+    s.status='correct';row.className='sum-row correct';ico.textContent='✅';inp.disabled=true;
+    DAG.score++;document.getElementById('dagScore').textContent=DAG.score;
+    var done=DAG.sums[inp.dataset.c].filter(function(x){return x.status==='correct';}).length;
+    document.getElementById('prog-'+inp.dataset.c).style.width=Math.round(done/3*100)+'%';
+    addPoint();
+    if(DAG.score===12)celebrate();
+  }else{
+    row.className='sum-row';void row.offsetWidth;row.className='sum-row wrong';ico.textContent='❌';
+  }
+}
+
+/* ---------- events ---------- */
+document.querySelector('.tabs').addEventListener('click',function(e){
+  var b=e.target.closest('.tab');if(!b)return;
+  app.topic=b.dataset.t;render();
+});
+main.addEventListener('input',function(e){if(e.target.dataset&&e.target.dataset.c)checkDag(e.target);});
+main.addEventListener('keydown',function(e){
+  if(e.key!=='Enter'||!e.target.classList.contains('ans-input'))return;
+  var all=Array.prototype.slice.call(main.querySelectorAll('.ans-input:not([disabled])')),i=all.indexOf(e.target);
+  if(i>=0&&i<all.length-1)all[i+1].focus();
+});
+main.addEventListener('click',function(e){
+  var b=e.target.closest('button');if(!b)return;
+  if(b.dataset.v!==undefined){app.view[app.topic]=b.dataset.v;render();window.scrollTo({top:main.offsetTop-10,behavior:'smooth'});return;}
+  if(b.dataset.l!==undefined){app.level[app.topic]=+b.dataset.l;render();return;}
+  var a=b.dataset.act;
+  if(a==='demo'){app.view[app.topic]='oefenen';pendingDemo=true;render();}
+  else if(a==='practice'){app.view[app.topic]='oefenen';render();}
+  else if(a==='newnul')newNullen();
+  else if(a==='nulhint')document.querySelector('#nul'+b.dataset.i+' .nul-hint').classList.toggle('show');
+  else if(a==='newdag'){newDag();renderDag();}
+  else if(a==='hint')showHint();
+  else if(a==='step')demoStep();
+  else if(a==='next')newSheet('practice');
+  else if(a==='ex')newSheet('demo');
+  else if(a==='carry'){app.carry=!app.carry;newSheet(WS.mode,WS.prob);}
+  else if(a==='table'){app.table=!app.table;updateTable();}
+});
+
+initPuzzle();
+render();
 </script>
 </body>
 </html>
