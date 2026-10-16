@@ -22,6 +22,12 @@ body{font-family:'Nunito',sans-serif;background:#fff9f0;min-height:100vh;color:#
 .tab{border:none;cursor:pointer;font-family:'Fredoka One',cursive;font-size:1.08rem;padding:10px 18px;border-radius:16px;background:white;color:#555;box-shadow:0 4px 14px rgba(0,0,0,.08);display:flex;align-items:center;gap:8px;transition:transform .15s;border:3px solid transparent;}
 .tab span{font-size:1.3rem;}
 .tab:hover{transform:translateY(-2px);}
+@media(max-width:640px){
+  .tabs{flex-wrap:nowrap;overflow-x:auto;justify-content:flex-start;padding:12px 14px 8px;scrollbar-width:none;}
+  .tabs::-webkit-scrollbar{display:none;}
+  .tab{flex:none;font-size:.92rem;padding:7px 12px;border-radius:13px;gap:5px;}
+  .tab span{font-size:1.05rem;}
+}
 .tab.nullen.on{background:linear-gradient(135deg,#ffca28,#ffa000);color:#5d4037;border-color:#ffe082;}
 .tab.keer.on{background:linear-gradient(135deg,#ef5350,#e53935);color:white;border-color:#ffcdd2;}
 .tab.deel.on{background:linear-gradient(135deg,#66bb6a,#43a047);color:white;border-color:#c8e6c9;}
@@ -130,6 +136,40 @@ body{font-family:'Nunito',sans-serif;background:#fff9f0;min-height:100vh;color:#
 .sums-list{padding:12px;display:flex;flex-direction:column;gap:9px;}
 .sums-list .ans-input{width:72px;}
 
+/* MENU */
+.tab.menu.on{background:linear-gradient(135deg,#7e57c2,#5c6bc0);color:white;border-color:#d1c4e9;}
+.main.menu{--tc:#7e57c2;--tl:#ede7f6;}
+.menu-h{font-family:'Fredoka One',cursive;font-size:1.45rem;color:#5e35b1;text-align:center;margin:4px 0 12px;}
+.kids{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-bottom:22px;}
+.kid{border:4px solid #e0e0e0;background:white;border-radius:22px;padding:12px 26px;cursor:pointer;font-family:'Fredoka One',cursive;font-size:1.5rem;color:#555;display:flex;flex-direction:column;align-items:center;gap:4px;min-width:150px;transition:transform .15s;}
+.kid:hover{transform:scale(1.04);}
+.kid .av{width:58px;height:58px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-size:1.8rem;}
+.kid small{font-family:'Nunito',sans-serif;font-weight:900;font-size:.85rem;color:#999;}
+.kid.on{border-color:#7e57c2;background:#f3eefc;color:#5e35b1;box-shadow:0 6px 18px rgba(126,87,194,.25);}
+.menu-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;}
+.tile{border:none;cursor:pointer;border-radius:20px;padding:16px 14px;text-align:left;color:white;font-family:'Nunito',sans-serif;box-shadow:0 5px 16px rgba(0,0,0,.12);transition:transform .15s;display:flex;flex-direction:column;gap:4px;}
+.tile:hover{transform:translateY(-3px) scale(1.02);}
+.tile .te{font-size:2rem;}
+.tile b{font-family:'Fredoka One',cursive;font-size:1.3rem;font-weight:400;}
+.tile span{font-size:.88rem;font-weight:700;opacity:.92;}
+.tile.dag{background:linear-gradient(135deg,#ff7043,#ff9800);}
+.tile.tafels{background:linear-gradient(135deg,#29b6f6,#0288d1);}
+.tile.nullen{background:linear-gradient(135deg,#ffca28,#ffa000);color:#5d4037;}
+.tile.keer{background:linear-gradient(135deg,#ef5350,#e53935);}
+.tile.deel{background:linear-gradient(135deg,#66bb6a,#43a047);}
+.score-box #kidName:not(:empty){color:#7e57c2;margin-right:4px;}
+
+/* TAFELS */
+.tab.tafels.on{background:linear-gradient(135deg,#29b6f6,#0288d1);color:white;border-color:#b3e5fc;}
+.main.tafels{--tc:#0288d1;--tl:#e1f5fe;}
+.tchips{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;}
+.tchip{width:46px;height:46px;border-radius:14px;border:3px solid #e0e0e0;background:white;font-family:'Fredoka One',cursive;font-size:1.25rem;color:#888;cursor:pointer;}
+.tchip.on{background:#0288d1;border-color:#0288d1;color:white;}
+.tquick{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:10px 0 4px;}
+.tquick .lvl{font-size:.82rem;padding:4px 12px;}
+.tpick-h{text-align:center;font-weight:900;color:#666;margin-bottom:8px;}
+.tsum{text-align:center;font-weight:800;color:#0277bd;margin:10px 0 12px;}
+
 /* UITLEG */
 .uitleg{line-height:1.55;font-size:1.02rem;}
 .uitleg h3{font-family:'Fredoka One',cursive;font-size:1.35rem;color:var(--tc);margin:18px 0 8px;}
@@ -185,7 +225,9 @@ body{font-family:'Nunito',sans-serif;background:#fff9f0;min-height:100vh;color:#
   <div class="sub">Groep 5 &amp; 6 — dagsommen, keersommen &amp; staartdelingen</div>
 </div>
 <nav class="tabs">
+  <button class="tab menu" data-t="menu"><span>🏠</span>Menu</button>
   <button class="tab dag" data-t="dag"><span>🧮</span>Dagsommen</button>
+  <button class="tab tafels" data-t="tafels"><span>🔢</span>Tafels</button>
   <button class="tab nullen" data-t="nullen"><span>🔟</span>Keer met nullen</button>
   <button class="tab keer" data-t="keer"><span>✖️</span>Keer onder elkaar</button>
   <button class="tab deel" data-t="deel"><span>➗</span>Staartdeling</button>
@@ -193,7 +235,7 @@ body{font-family:'Nunito',sans-serif;background:#fff9f0;min-height:100vh;color:#
 <div class="layout">
   <section class="card main" id="main"></section>
   <aside class="side">
-    <div class="score-box">⭐ Goed: <span class="big" id="scoreNum">0</span></div>
+    <div class="score-box"><span id="kidName"></span>⭐ Goed: <span class="big" id="scoreNum">0</span></div>
     <div class="puzzle-label" id="puzzleLabel"></div>
     <div class="puzzle-outer">
       <canvas id="puzzleCanvas" width="360" height="270"></canvas>
@@ -203,6 +245,25 @@ body{font-family:'Nunito',sans-serif;background:#fff9f0;min-height:100vh;color:#
 </div>
 
 <!-- ================= UITLEG ================= -->
+<template id="tpl-tafels">
+  <h3>Wat is een tafel? 🔢</h3>
+  <p>De tafel van 7 is: 1 × 7, 2 × 7, 3 × 7 … tot 10 × 7. Je telt steeds <b>7 erbij</b>: 7, 14, 21, 28, 35, 42, 49, 56, 63, 70.</p>
+  <p><b>3 × 7</b> betekent: 3 keer een groepje van 7. 🍬🍬🍬🍬🍬🍬🍬 &nbsp;🍬🍬🍬🍬🍬🍬🍬 &nbsp;🍬🍬🍬🍬🍬🍬🍬 = 21</p>
+  <h3>Handige trucjes 🪄</h3>
+  <div class="examples">
+    <div class="exbox"><div class="q">× 1</div>Het getal blijft hetzelfde.<div class="a">1 × 8 = 8</div></div>
+    <div class="exbox"><div class="q">× 2</div>Het dubbele.<div class="a">2 × 7 = 7 + 7 = 14</div></div>
+    <div class="exbox"><div class="q">× 4</div>Twee keer het dubbele.<div class="a">4 × 6: 12 → 24</div></div>
+    <div class="exbox"><div class="q">× 5</div>De helft van keer 10.<div class="a">8 × 5: 80 → 40</div></div>
+    <div class="exbox"><div class="q">× 10</div>Zet er een 0 achter.<div class="a">6 × 10 = 60</div></div>
+    <div class="exbox"><div class="q">× 9</div>Keer 10, en dan 1 keer eraf.<div class="a">7 × 9: 70 − 7 = 63</div></div>
+    <div class="exbox"><div class="q">× 11</div>Het cijfer twee keer (t/m 9).<div class="a">4 × 11 = 44</div></div>
+    <div class="exbox"><div class="q">× 12</div>Keer 10 plus keer 2.<div class="a">6 × 12: 60 + 12 = 72</div></div>
+  </div>
+  <div class="why"><b>Omdraaien mag!</b> 3 × 8 is hetzelfde als 8 × 3. Weet je er eentje niet? Draai hem dan om, misschien ken je die wel.</div>
+  <div class="tip"><b>💡 Steunsom:</b> weet je 7 × 8 niet? Begin bij een som die je wél weet: 5 × 8 = 40. Dan nog 2 × 8 = 16 erbij: 40 + 16 = <b>56</b>.</div>
+</template>
+
 <template id="tpl-nullen">
   <h3>Het nullen-trucje 🪄</h3>
   <ol class="steps">
@@ -770,6 +831,7 @@ function updatePuzzleLabel(){
 function addPoint(){
   score++;
   document.getElementById('scoreNum').textContent=score;
+  if(app.kid){var d=kidData();d.stars=(d.stars||0)+1;saveKid(d);}
   if(revealed.length>=12)initPuzzle();
   revealTile();
 }
@@ -1016,12 +1078,105 @@ function renderMinis(root){
    APP
    ========================================================= */
 var TOPICS={
+  menu:{levels:[]},
   dag:{levels:[]},
+  tafels:{levels:[]},
   nullen:{levels:['× tientallen','× honderdtallen','nullen × nullen']},
   keer:{levels:['47 × 6','238 × 4','34 × 26','254 × 36']},
   deel:{levels:['72 : 3','156 : 4','met rest','deler met 2 cijfers']}
 };
-var app={topic:'dag',view:{nullen:'uitleg',keer:'uitleg',deel:'uitleg'},level:{nullen:0,keer:0,deel:0},carry:true,table:false};
+var app={topic:'menu',view:{tafels:'oefenen',nullen:'uitleg',keer:'uitleg',deel:'uitleg'},level:{nullen:0,keer:0,deel:0},carry:true,table:false,kid:null};
+
+/* ---------- wie oefent er? (per kind onthouden in de browser) ---------- */
+var KIDS=[{name:'Tygo',color:'#ff7043'},{name:'Stijn',color:'#26a69a'}];
+function store(k,v){try{if(v===undefined)return JSON.parse(localStorage.getItem('rm-'+k));localStorage.setItem('rm-'+k,JSON.stringify(v));}catch(e){return null;}}
+function kidData(){
+  var d=app.kid&&store('kid-'+app.kid);
+  if(d&&!d.tables)d.tables=[2,3,4,5,10];
+  return d||{stars:0,tables:(app.guestTables||[2,3,4,5,10]).slice()};
+}
+function saveKid(d){if(app.kid)store('kid-'+app.kid,d);}
+function setKid(name){
+  app.kid=name;store('lastkid',name);
+  document.getElementById('kidName').textContent=name?name+' · ':'';
+}
+
+function renderMenu(){
+  var h='<div class="menu-h">Wie gaat er oefenen?</div><div class="kids">';
+  KIDS.forEach(function(k){
+    var d=store('kid-'+k.name)||{stars:0};
+    h+='<button class="kid'+(app.kid===k.name?' on':'')+'" data-kid="'+k.name+'"><span class="av" style="background:'+k.color+'">'+k.name[0]+'</span>'+k.name+'<small>⭐ '+(d.stars||0)+' sommen goed</small></button>';
+  });
+  h+='</div><div class="menu-h">Wat wil je oefenen?</div><div class="menu-grid">'
+    +'<button class="tile tafels" data-go="tafels"><span class="te">🔢</span><b>Tafels</b><span>Kies zelf welke tafels: 1 t/m 12</span></button>'
+    +'<button class="tile dag" data-go="dag"><span class="te">🧮</span><b>Dagsommen</b><span>12 sommen: plus, min, keer en delen</span></button>'
+    +'<button class="tile nullen" data-go="nullen"><span class="te">🔟</span><b>Keer met nullen</b><span>30 × 40 met het nullen-trucje</span></button>'
+    +'<button class="tile keer" data-go="keer"><span class="te">✖️</span><b>Keer onder elkaar</b><span>Met onthouden, zoals 47 × 6</span></button>'
+    +'<button class="tile deel" data-go="deel"><span class="te">➗</span><b>Staartdeling</b><span>Delen, Keer, Min, Omlaag</span></button>'
+    +'</div>';
+  main.innerHTML=h;
+}
+
+/* ---------- tafels ---------- */
+var TAF={items:[],done:0,first:0};
+function tafHint(a,t){
+  var ans=a*t;
+  if(t===1||a===1)return 'Keer 1: het getal blijft hetzelfde. <b>'+ans+'</b>';
+  if(t===10||a===10)return 'Keer 10: zet er een 0 achter. <b>'+ans+'</b>';
+  if(t===11&&a<10)return 'Keer 11: het cijfer twee keer. <b>'+ans+'</b>';
+  if(a===11&&t<10)return 'Keer 11: het cijfer twee keer. <b>'+ans+'</b>';
+  if(t===2||a===2)return 'Keer 2 is het dubbele: '+(a===2?t:a)+' + '+(a===2?t:a)+' = <b>'+ans+'</b>';
+  if(t===12)return 'Keer 12 = keer 10 plus keer 2: '+(a*10)+' + '+(a*2)+' = <b>'+ans+'</b>';
+  if(t===9)return 'Keer 9 = keer 10 en dan 1 keer eraf: '+(a*10)+' − '+a+' = <b>'+ans+'</b>';
+  if(t===5)return 'Keer 5 is de helft van keer 10: '+(a*10)+' → de helft is <b>'+ans+'</b>';
+  if(a<=5)return 'Tel in sprongen van '+t+': '+Array.from({length:a},function(_,i){return (i+1)*t;}).join(', ')+'. Dus <b>'+ans+'</b>';
+  return 'Steunsom: 5 × '+t+' = '+(5*t)+'. Dan nog '+(a-5)+' × '+t+' = '+((a-5)*t)+' erbij: '+(5*t)+' + '+((a-5)*t)+' = <b>'+ans+'</b>';
+}
+function renderTafels(seg){
+  var sel=kidData().tables,chips='';
+  for(var i=1;i<=12;i++)chips+='<button class="tchip'+(sel.indexOf(i)>=0?' on':'')+'" data-tab="'+i+'">'+i+'</button>';
+  main.innerHTML=seg
+    +'<div class="tpick-h">'+(app.kid?app.kid+', welke':'Welke')+' tafels wil je oefenen?</div>'
+    +'<div class="tchips">'+chips+'</div>'
+    +'<div class="tquick"><button class="lvl" data-tq="1-5">1 t/m 5</button><button class="lvl" data-tq="6-10">6 t/m 10</button><button class="lvl" data-tq="11-12">11 en 12</button><button class="lvl" data-tq="1-12">Allemaal</button><button class="lvl" data-tq="3,4,6,7,8,9">De moeilijke</button></div>'
+    +'<div class="tsum" id="tafSum"></div>'
+    +'<div class="nul-grid" id="tafGrid"></div>'
+    +'<div class="controls"><button class="btn go" data-act="newtaf">🔄 Nieuwe reeks</button><button class="btn" data-v="uitleg">📖 Tafeltrucjes</button></div>';
+  document.getElementById('tafGrid').addEventListener('input',function(e){if(e.target.dataset.ti!==undefined)checkTaf(e.target);});
+  newTafels();
+}
+function newTafels(){
+  var sel=kidData().tables.slice().sort(function(a,b){return a-b;}),grid=document.getElementById('tafGrid');
+  TAF={items:[],done:0,first:0};
+  if(!sel.length){grid.innerHTML='<p style="text-align:center;color:#999;font-weight:700">Kies hierboven minstens één tafel. 👆</p>';document.getElementById('tafSum').textContent='';return;}
+  document.getElementById('tafSum').textContent='Je oefent: tafel van '+sel.join(', ').replace(/, (\d+)$/,' en $1');
+  var pool=[];sel.forEach(function(t){for(var a=1;a<=10;a++)pool.push([a,t]);});
+  for(var j=pool.length-1;j>0;j--){var k=Math.floor(Math.random()*(j+1)),x=pool[j];pool[j]=pool[k];pool[k]=x;}
+  while(pool.length<12)pool=pool.concat(pool);
+  TAF.items=pool.slice(0,12).map(function(p){return {a:p[0],t:p[1],ans:p[0]*p[1],tries:0,swap:Math.random()<.2};});
+  grid.innerHTML=TAF.items.map(function(s,i){
+    var q=s.swap?s.t+' × '+s.a:s.a+' × '+s.t;
+    return '<div class="nul-item" id="taf'+i+'"><div class="sum-row"><span class="sum-q">'+q+'</span><span class="eq">=</span>'
+      +'<input class="ans-input" inputmode="numeric" autocomplete="off" placeholder="?" data-ti="'+i+'">'
+      +'<button class="hintbtn" data-act="tafhint" data-i="'+i+'" title="Hint">💡</button><span class="ico"></span></div>'
+      +'<div class="nul-hint">'+tafHint(s.a,s.t)+'</div></div>';
+  }).join('');
+}
+function checkTaf(inp){
+  var i=+inp.dataset.ti,s=TAF.items[i],v=inp.value.replace(/\D/g,''),row=inp.parentNode,ico=row.querySelector('.ico');
+  if(v.length<String(s.ans).length){row.className='sum-row';ico.textContent='';return;}
+  if(+v===s.ans){
+    row.className='sum-row correct';ico.textContent='✅';inp.disabled=true;TAF.done++;if(!s.tries)TAF.first++;addPoint();
+    var nxt=document.querySelector('#tafGrid .ans-input:not([disabled])');if(nxt)nxt.focus({preventScroll:true});
+    if(TAF.done===TAF.items.length){
+      celebrate();
+      document.getElementById('tafSum').innerHTML='🎉 Klaar! <b>'+TAF.first+' van de '+TAF.items.length+'</b> in één keer goed.'+(TAF.first===TAF.items.length?' Tafelkampioen! 🏆':'');
+    }
+  }else{
+    row.className='sum-row';void row.offsetWidth;row.className='sum-row wrong';ico.textContent='❌';
+    if(++s.tries>=2)document.querySelector('#taf'+i+' .nul-hint').classList.add('show');
+  }
+}
 var WS={S:null,idx:0,mode:'practice',tries:0,mistakes:0,done:false,prob:null};
 var pendingDemo=false;
 var main=document.getElementById('main');
@@ -1031,16 +1186,18 @@ function render(){
   document.querySelectorAll('.tab').forEach(function(b){b.classList.toggle('on',b.dataset.t===t);});
   main.className='card main '+t;
   void main.offsetWidth;main.style.animation='none';void main.offsetWidth;main.style.animation='';
+  if(t==='menu'){renderMenu();return;}
   if(t==='dag'){renderDag();return;}
   var v=app.view[t];
   var seg='<div class="seg"><button data-v="uitleg" class="'+(v==='uitleg'?'on':'')+'">📖 Uitleg</button><button data-v="oefenen" class="'+(v==='oefenen'?'on':'')+'">✏️ Oefenen</button></div>';
   if(v==='uitleg'){
     main.innerHTML=seg+'<div class="uitleg">'+document.getElementById('tpl-'+t).innerHTML+'</div>'
-      +'<div class="u-actions">'+(t!=='nullen'?'<button class="btn big step" data-act="demo">🎬 Bekijk een voorbeeld stap voor stap</button>':'')
+      +'<div class="u-actions">'+(t==='keer'||t==='deel'?'<button class="btn big step" data-act="demo">🎬 Bekijk een voorbeeld stap voor stap</button>':'')
       +'<button class="btn big go" data-act="practice">✏️ Zelf oefenen</button></div>';
     renderMinis(main);
     return;
   }
+  if(t==='tafels'){renderTafels(seg);return;}
   var lv='<div class="levels">'+TOPICS[t].levels.map(function(l,i){
     return '<button class="lvl'+(i===app.level[t]?' on':'')+'" data-l="'+i+'">'+(i+1)+'. '+l+'</button>';}).join('')+'</div>';
   if(t==='nullen'){
@@ -1276,12 +1433,28 @@ main.addEventListener('keydown',function(e){
 });
 main.addEventListener('click',function(e){
   var b=e.target.closest('button');if(!b)return;
+  if(b.dataset.kid){setKid(app.kid===b.dataset.kid?null:b.dataset.kid);renderMenu();return;}
+  if(b.dataset.go){app.topic=b.dataset.go;render();window.scrollTo({top:main.offsetTop-10,behavior:'smooth'});return;}
+  if(b.dataset.tab){
+    var d=kidData(),n=+b.dataset.tab,i=d.tables.indexOf(n);
+    if(i>=0)d.tables.splice(i,1);else d.tables.push(n);
+    saveKid(d);if(!app.kid)app.guestTables=d.tables;
+    b.classList.toggle('on',i<0);newTafels();return;
+  }
+  if(b.dataset.tq){
+    var q=b.dataset.tq,list=[];
+    if(q.indexOf('-')>0){var r=q.split('-');for(var x=+r[0];x<=+r[1];x++)list.push(x);}else list=q.split(',').map(Number);
+    var d2=kidData();d2.tables=list;saveKid(d2);if(!app.kid)app.guestTables=list;
+    render();return;
+  }
   if(b.dataset.v!==undefined){app.view[app.topic]=b.dataset.v;render();window.scrollTo({top:main.offsetTop-10,behavior:'smooth'});return;}
   if(b.dataset.l!==undefined){app.level[app.topic]=+b.dataset.l;render();return;}
   var a=b.dataset.act;
   if(a==='demo'){app.view[app.topic]='oefenen';pendingDemo=true;render();}
   else if(a==='practice'){app.view[app.topic]='oefenen';render();}
   else if(a==='newnul')newNullen();
+  else if(a==='newtaf')newTafels();
+  else if(a==='tafhint')document.querySelector('#taf'+b.dataset.i+' .nul-hint').classList.toggle('show');
   else if(a==='nulhint')document.querySelector('#nul'+b.dataset.i+' .nul-hint').classList.toggle('show');
   else if(a==='newdag'){newDag();renderDag();}
   else if(a==='hint')showHint();
@@ -1292,6 +1465,7 @@ main.addEventListener('click',function(e){
   else if(a==='table'){app.table=!app.table;updateTable();}
 });
 
+setKid(store('lastkid'));
 initPuzzle();
 render();
 </script>
