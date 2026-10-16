@@ -169,6 +169,9 @@ body{font-family:'Nunito',sans-serif;background:#fff9f0;min-height:100vh;color:#
 .tquick .lvl{font-size:.82rem;padding:4px 12px;}
 .tpick-h{text-align:center;font-weight:900;color:#666;margin-bottom:8px;}
 .tsum{text-align:center;font-weight:800;color:#0277bd;margin:10px 0 12px;}
+.tile.deeltafels{background:linear-gradient(135deg,#ab47bc,#7b1fa2);}
+.tmode{max-width:480px;}
+.tmode button{white-space:nowrap;}
 
 /* UITLEG */
 .uitleg{line-height:1.55;font-size:1.02rem;}
@@ -262,6 +265,18 @@ body{font-family:'Nunito',sans-serif;background:#fff9f0;min-height:100vh;color:#
   </div>
   <div class="why"><b>Omdraaien mag!</b> 3 × 8 is hetzelfde als 8 × 3. Weet je er eentje niet? Draai hem dan om, misschien ken je die wel.</div>
   <div class="tip"><b>💡 Steunsom:</b> weet je 7 × 8 niet? Begin bij een som die je wél weet: 5 × 8 = 40. Dan nog 2 × 8 = 16 erbij: 40 + 16 = <b>56</b>.</div>
+
+  <h3>Deeltafels 🍕</h3>
+  <p><b>Delen is keer andersom.</b> Bij 21 : 7 vraag je: <i>hoe vaak past 7 in 21?</i> Of: <i>welk getal keer 7 is 21?</i></p>
+  <p>21 snoepjes eerlijk verdelen over 7 kinderen: iedereen krijgt er <b>3</b>. 🍬🍬🍬</p>
+  <div class="examples">
+    <div class="exbox"><div class="q">Somfamilie</div>Weet je één som, dan weet je er vier!<div class="a">8 × 7 = 56<br>7 × 8 = 56<br>56 : 7 = 8<br>56 : 8 = 7</div></div>
+    <div class="exbox"><div class="q">: 2</div>De helft.<div class="a">18 : 2 = 9</div></div>
+    <div class="exbox"><div class="q">: 10</div>Haal de 0 eraf.<div class="a">70 : 10 = 7</div></div>
+    <div class="exbox"><div class="q">: 1</div>Het getal blijft hetzelfde.<div class="a">6 : 1 = 6</div></div>
+  </div>
+  <div class="tip"><b>💡 Zo vind je het antwoord:</b> 42 : 6. Zeg de tafel van 6 op tot je bij 42 bent: 6, 12, 18, 24, 30, 36, 42. Dat zijn <b>7</b> sprongen, dus 42 : 6 = 7.<br>
+    Of met een steunsom: 5 × 6 = 30. Dan blijft er 12 over, en dat is 2 × 6. Samen 5 + 2 = <b>7</b>.</div>
 </template>
 
 <template id="tpl-nullen">
@@ -1093,7 +1108,8 @@ function store(k,v){try{if(v===undefined)return JSON.parse(localStorage.getItem(
 function kidData(){
   var d=app.kid&&store('kid-'+app.kid);
   if(d&&!d.tables)d.tables=[2,3,4,5,10];
-  return d||{stars:0,tables:(app.guestTables||[2,3,4,5,10]).slice()};
+  if(d&&!d.mode)d.mode='keer';
+  return d||{stars:0,tables:(app.guestTables||[2,3,4,5,10]).slice(),mode:app.guestMode||'keer'};
 }
 function saveKid(d){if(app.kid)store('kid-'+app.kid,d);}
 function setKid(name){
@@ -1108,7 +1124,8 @@ function renderMenu(){
     h+='<button class="kid'+(app.kid===k.name?' on':'')+'" data-kid="'+k.name+'"><span class="av" style="background:'+k.color+'">'+k.name[0]+'</span>'+k.name+'<small>⭐ '+(d.stars||0)+' sommen goed</small></button>';
   });
   h+='</div><div class="menu-h">Wat wil je oefenen?</div><div class="menu-grid">'
-    +'<button class="tile tafels" data-go="tafels"><span class="te">🔢</span><b>Tafels</b><span>Kies zelf welke tafels: 1 t/m 12</span></button>'
+    +'<button class="tile tafels" data-go="tafels" data-mode="keer"><span class="te">🔢</span><b>Tafels</b><span>Keertafels: kies zelf welke, 1 t/m 12</span></button>'
+    +'<button class="tile deeltafels" data-go="tafels" data-mode="delen"><span class="te">🍕</span><b>Deeltafels</b><span>56 : 7 = ? Kies zelf welke, 1 t/m 12</span></button>'
     +'<button class="tile dag" data-go="dag"><span class="te">🧮</span><b>Dagsommen</b><span>12 sommen: plus, min, keer en delen</span></button>'
     +'<button class="tile nullen" data-go="nullen"><span class="te">🔟</span><b>Keer met nullen</b><span>30 × 40 met het nullen-trucje</span></button>'
     +'<button class="tile keer" data-go="keer"><span class="te">✖️</span><b>Keer onder elkaar</b><span>Met onthouden, zoals 47 × 6</span></button>'
@@ -1132,11 +1149,23 @@ function tafHint(a,t){
   if(a<=5)return 'Tel in sprongen van '+t+': '+Array.from({length:a},function(_,i){return (i+1)*t;}).join(', ')+'. Dus <b>'+ans+'</b>';
   return 'Steunsom: 5 × '+t+' = '+(5*t)+'. Dan nog '+(a-5)+' × '+t+' = '+((a-5)*t)+' erbij: '+(5*t)+' + '+((a-5)*t)+' = <b>'+ans+'</b>';
 }
+function deelHint(a,t){
+  var n=a*t,end=' Dus '+n+' : '+t+' = <b>'+a+'</b>. (Controle: '+a+' × '+t+' = '+n+')';
+  if(t===1)return 'Delen door 1: het getal blijft hetzelfde.'+end;
+  if(t===10)return 'Delen door 10: haal de 0 eraf. '+n+' → '+a+'.'+end;
+  if(t===2)return 'Delen door 2 is de helft: de helft van '+n+' is '+a+'.'+end;
+  var h='Welk getal keer '+t+' is '+n+'? Denk aan de tafel van '+t+'. ';
+  if(a<=5)return h+'Tel in sprongen van '+t+': '+Array.from({length:a},function(_,i){return (i+1)*t;}).join(', ')+'. Dat zijn '+a+' sprongen.'+end;
+  if(a===10)return h+'10 × '+t+' = '+n+'.'+end;
+  return h+'Steunsom: 5 × '+t+' = '+(5*t)+'. Dan blijft er '+(n-5*t)+' over, en dat is '+(a-5)+' × '+t+'. Samen 5 + '+(a-5)+' = '+a+'.'+end;
+}
+var TMODES={keer:'✖️ Keer',delen:'➗ Delen',mix:'🔀 Door elkaar'};
 function renderTafels(seg){
-  var sel=kidData().tables,chips='';
+  var kd=kidData(),sel=kd.tables,chips='';
   for(var i=1;i<=12;i++)chips+='<button class="tchip'+(sel.indexOf(i)>=0?' on':'')+'" data-tab="'+i+'">'+i+'</button>';
   main.innerHTML=seg
-    +'<div class="tpick-h">'+(app.kid?app.kid+', welke':'Welke')+' tafels wil je oefenen?</div>'
+    +'<div class="seg tmode">'+Object.keys(TMODES).map(function(m){return '<button data-tmode="'+m+'" class="'+(kd.mode===m?'on':'')+'">'+TMODES[m]+'</button>';}).join('')+'</div>'
+    +'<div class="tpick-h">'+(app.kid?app.kid+', welke':'Welke')+' '+(kd.mode==='delen'?'deeltafels':'tafels')+' wil je oefenen?</div>'
     +'<div class="tchips">'+chips+'</div>'
     +'<div class="tquick"><button class="lvl" data-tq="1-5">1 t/m 5</button><button class="lvl" data-tq="6-10">6 t/m 10</button><button class="lvl" data-tq="11-12">11 en 12</button><button class="lvl" data-tq="1-12">Allemaal</button><button class="lvl" data-tq="3,4,6,7,8,9">De moeilijke</button></div>'
     +'<div class="tsum" id="tafSum"></div>'
@@ -1146,20 +1175,24 @@ function renderTafels(seg){
   newTafels();
 }
 function newTafels(){
-  var sel=kidData().tables.slice().sort(function(a,b){return a-b;}),grid=document.getElementById('tafGrid');
+  var kd=kidData(),mode=kd.mode,sel=kd.tables.slice().sort(function(a,b){return a-b;}),grid=document.getElementById('tafGrid');
   TAF={items:[],done:0,first:0};
   if(!sel.length){grid.innerHTML='<p style="text-align:center;color:#999;font-weight:700">Kies hierboven minstens één tafel. 👆</p>';document.getElementById('tafSum').textContent='';return;}
-  document.getElementById('tafSum').textContent='Je oefent: tafel van '+sel.join(', ').replace(/, (\d+)$/,' en $1');
+  document.getElementById('tafSum').textContent='Je oefent: '+(mode==='delen'?'deeltafel':mode==='mix'?'keer- en deeltafel':'tafel')+' van '+sel.join(', ').replace(/, (\d+)$/,' en $1');
   var pool=[];sel.forEach(function(t){for(var a=1;a<=10;a++)pool.push([a,t]);});
   for(var j=pool.length-1;j>0;j--){var k=Math.floor(Math.random()*(j+1)),x=pool[j];pool[j]=pool[k];pool[k]=x;}
   while(pool.length<12)pool=pool.concat(pool);
-  TAF.items=pool.slice(0,12).map(function(p){return {a:p[0],t:p[1],ans:p[0]*p[1],tries:0,swap:Math.random()<.2};});
+  TAF.items=pool.slice(0,12).map(function(p,i){
+    var div=mode==='delen'||(mode==='mix'&&i%2===1);
+    return {a:p[0],t:p[1],div:div,ans:div?p[0]:p[0]*p[1],tries:0,swap:Math.random()<.2};
+  });
+  if(mode==='mix')TAF.items.sort(function(){return Math.random()-.5;});
   grid.innerHTML=TAF.items.map(function(s,i){
-    var q=s.swap?s.t+' × '+s.a:s.a+' × '+s.t;
+    var q=s.div?(s.a*s.t)+' : '+s.t:s.swap?s.t+' × '+s.a:s.a+' × '+s.t;
     return '<div class="nul-item" id="taf'+i+'"><div class="sum-row"><span class="sum-q">'+q+'</span><span class="eq">=</span>'
       +'<input class="ans-input" inputmode="numeric" autocomplete="off" placeholder="?" data-ti="'+i+'">'
       +'<button class="hintbtn" data-act="tafhint" data-i="'+i+'" title="Hint">💡</button><span class="ico"></span></div>'
-      +'<div class="nul-hint">'+tafHint(s.a,s.t)+'</div></div>';
+      +'<div class="nul-hint">'+(s.div?deelHint(s.a,s.t):tafHint(s.a,s.t))+'</div></div>';
   }).join('');
 }
 function checkTaf(inp){
@@ -1170,7 +1203,7 @@ function checkTaf(inp){
     var nxt=document.querySelector('#tafGrid .ans-input:not([disabled])');if(nxt)nxt.focus({preventScroll:true});
     if(TAF.done===TAF.items.length){
       celebrate();
-      document.getElementById('tafSum').innerHTML='🎉 Klaar! <b>'+TAF.first+' van de '+TAF.items.length+'</b> in één keer goed.'+(TAF.first===TAF.items.length?' Tafelkampioen! 🏆':'');
+      document.getElementById('tafSum').innerHTML='🎉 Klaar! <b>'+TAF.first+' van de '+TAF.items.length+'</b> in één keer goed.'+(TAF.first===TAF.items.length?(kidData().mode==='delen'?' Deelkampioen! 🏆':' Tafelkampioen! 🏆'):'');
     }
   }else{
     row.className='sum-row';void row.offsetWidth;row.className='sum-row wrong';ico.textContent='❌';
@@ -1434,6 +1467,11 @@ main.addEventListener('keydown',function(e){
 main.addEventListener('click',function(e){
   var b=e.target.closest('button');if(!b)return;
   if(b.dataset.kid){setKid(app.kid===b.dataset.kid?null:b.dataset.kid);renderMenu();return;}
+  if(b.dataset.tmode||(b.dataset.go&&b.dataset.mode)){
+    var dm=kidData();dm.mode=b.dataset.tmode||b.dataset.mode;saveKid(dm);if(!app.kid)app.guestMode=dm.mode;
+    if(b.dataset.tmode){render();return;}
+    app.view.tafels='oefenen';
+  }
   if(b.dataset.go){app.topic=b.dataset.go;render();window.scrollTo({top:main.offsetTop-10,behavior:'smooth'});return;}
   if(b.dataset.tab){
     var d=kidData(),n=+b.dataset.tab,i=d.tables.indexOf(n);
