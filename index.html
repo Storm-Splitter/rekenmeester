@@ -390,7 +390,7 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--sky);outline-of
   <ol class="steps">
     <li><b>Zet de getallen netjes onder elkaar</b>: enen onder de enen, tientallen onder de tientallen.</li>
     <li><b>Begin altijd rechts</b>, bij de enen. Doe het onderste cijfer keer het bovenste cijfer.</li>
-    <li><b>Is de uitkomst 10 of meer?</b> Dan past hij niet in één hokje. Schrijf het <b>laatste cijfer</b> op en <b class="red">onthoud</b> de rest: zet het klein in het <span class="red">rode onthoud-vakje</span>, één hokje naar links.</li>
+    <li><b>Is de uitkomst 10 of meer?</b> Dan past hij niet in één hokje. Schrijf het <b>laatste cijfer</b> op en <b class="red">onthoud</b> de rest: zet het klein in het <span class="red">rode onthoud-vakje</span>, één hokje naar links. <i>Niets te onthouden? Typ dan een 0 in het rode vakje of druk op Enter.</i></li>
     <li><b>Ga één hokje naar links.</b> Eerst <b>keer</b>, en daarna tel je het onthouden getal er <b>bij op</b>.</li>
     <li><b>Bij het laatste cijfer</b> hoef je niets meer te onthouden: je schrijft de hele uitkomst op.</li>
   </ol>
@@ -985,6 +985,14 @@ function buildMul(a,b,withCarry){
   S.line(r1,0,Wd-1);
   var first=true;
   function pre(t){if(first){first=false;return 'Begin rechts, bij de enen. '+t;}return t;}
+  // Boven elke kolom staat een onthoud-vakje, ook als er niets te onthouden is (anders verklapt het vakje het al).
+  function carryCell(r,c,t,p,place){
+    return S.put(r,c,t,{kind:'carry',
+      ask:'Moet je iets <span class="red">onthouden</span>? Typ het in het rode vakje. Niets te onthouden? Typ dan een 0 of druk op Enter.',
+      hint:t>0
+        ?'Van '+p+' heb je de '+(p%10)+' opgeschreven. De <b>'+t+'</b> onthoud je: die schuift één hokje naar links, naar de '+place+'. Typ een <b class="red">'+t+'</b> in het rode vakje.'
+        :p+' is kleiner dan 10, dus die past helemaal in één hokje. Je hoeft <b>niets</b> te onthouden: typ een 0 of druk op Enter.'});
+  }
 
   function partial(m,mK,s){
     var rc=S.row('c'),rr=S.row(),res=[],carry=0,cK=null;
@@ -1009,10 +1017,9 @@ function buildMul(a,b,withCarry){
             hint:'Je bent klaar met rekenen, dus je hoeft niets meer te onthouden. De <b>'+t+'</b> van '+p+' schrijf je er gewoon voor.',hl:hl});
           res[pl+1]=t;
         }
-      }else if(t>0&&withCarry){
-        cK=S.put(rc,col(pl+1),t,{kind:'carry',
-          ask:'Je had <b>'+p+'</b> en hebt de '+u+' opgeschreven. Wat moet je <span class="red">onthouden</span>? Zet het in het rode vakje.',
-          hint:'De <b>'+t+'</b> van '+p+' onthoud je. Die schuift één hokje naar links, naar de '+PLACE[pl+1]+'. Typ een <b class="red">'+t+'</b> in het rode onthoud-vakje.'});
+      }else if(withCarry){
+        var ck=carryCell(rc,col(pl+1),t,p,PLACE[pl+1]);
+        cK=t>0?ck:null;
       }
       carry=t;
     }
@@ -1044,10 +1051,9 @@ function buildMul(a,b,withCarry){
       if(last){
         if(t>0)S.put(rr,col(j+1),t,{kind:'input',ask:'Laatste stap! Wat schrijf je er nog voor?',
           hint:'Je bent klaar met optellen. De <b>'+t+'</b> van '+sum+' schrijf je er gewoon voor.',hl:hl});
-      }else if(t>0&&withCarry){
-        cK=S.put(rc,col(j+1),t,{kind:'carry',
-          ask:'Je had <b>'+sum+'</b> en hebt de '+u+' opgeschreven. Wat moet je <span class="red">onthouden</span>?',
-          hint:'De <b>'+t+'</b> van '+sum+' onthoud je: typ een <b class="red">'+t+'</b> in het rode vakje bij de '+PLACE[j+1]+'.'});
+      }else if(withCarry){
+        var ck2=carryCell(rc,col(j+1),t,sum,PLACE[j+1]);
+        cK=t>0?ck2:null;
       }
       carry=t;
     }
@@ -1150,7 +1156,7 @@ function renderSheet(S,host,prefix,solved){
         else if(cell.kind==='sign'){el.textContent=cell.val;el.classList.add('sign');}
         else{
           el.classList.add(cell.kind==='carry'?'cin':'in');
-          if(solved){el.innerHTML='<span class="sv">'+cell.val+'</span>';}
+          if(solved){el.innerHTML='<span class="sv">'+(cell.kind==='carry'&&cell.val==='0'?'':cell.val)+'</span>';}
           else{
             var inp=document.createElement('input');
             inp.type='text';inp.inputMode='numeric';inp.autocomplete='off';inp.disabled=true;inp.dataset.k=k;
@@ -1337,6 +1343,11 @@ function render(){
       +'<button class="btn" data-act="table" id="bTable">🧾 Tafelhulp</button>'
       +'</div><div class="tablehelp" id="tableHelp"></div>';
     document.getElementById('sheetHost').addEventListener('input',onSheetInput);
+    document.getElementById('sheetHost').addEventListener('keydown',function(e){
+      var inp=e.target;if(e.key!=='Enter'||!inp.dataset||!inp.dataset.k)return;
+      var cell=WS.S.cells[inp.dataset.k];
+      if(cell&&cell.kind==='carry'&&!inp.value){e.preventDefault();inp.value='0';onSheetInput({target:inp});}
+    });
     var demo=pendingDemo;pendingDemo=false;
     newSheet(demo?'demo':'practice');
   }
@@ -1388,6 +1399,7 @@ function onSheetInput(e){
   var k=inp.dataset.k;if(k!==WS.S.order[WS.idx])return;
   var cell=WS.S.cells[k],el=cellEl(k);
   if(v===cell.val){
+    if(cell.kind==='carry'&&v==='0')inp.value='';
     el.classList.remove('bad');el.classList.add('ok');inp.disabled=true;
     WS.idx++;activate();
   }else{
@@ -1406,7 +1418,7 @@ function showHint(){
 function demoStep(){
   if(WS.done){newSheet('practice');return;}
   var k=WS.S.order[WS.idx],cell=WS.S.cells[k],el=cellEl(k);
-  el.querySelector('input').value=cell.val;el.classList.add('ok','demo');
+  el.querySelector('input').value=cell.kind==='carry'&&cell.val==='0'?'':cell.val;el.classList.add('ok','demo');
   WS.idx++;activate();
 }
 function finishSheet(){
